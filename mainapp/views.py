@@ -25,4 +25,5 @@ class CategoryDetailView(DetailView):
         context = super(CategoryDetailView, self).get_context_data()
         context['categories'] = self.model.objects.all()
         context['category'] = self.get_object()
+        context['articles'] = self.get_object().article_set.all()
         return context
