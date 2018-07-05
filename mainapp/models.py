@@ -1,7 +1,7 @@
 from django.db import models
 import hashlib
 import os
-
+from django.urls import reverse
 
 class Category(models.Model):
 
@@ -11,6 +11,9 @@ class Category(models.Model):
     class Meta:
         verbose_name = 'Category'
         verbose_name_plural = 'Categories'
+
+    def get_absolute_url(self):
+        return reverse('main:category-detail', kwargs={'slug': self.slug})
 
     def __str__(self):
         return self.name

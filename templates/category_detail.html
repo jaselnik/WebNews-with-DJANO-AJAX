@@ -1,0 +1,15 @@
+{% extends 'home.html' %}
+
+{% block title %}
+<title>{{ category.name }}</title>
+{% endblock title %}
+
+{% block body %}
+    <main role="main" class="container">
+        <div class="starter-template">
+        <h2>
+            Category: {{ category.name }}
+        </h2>
+        </div>
+    </main>
+{% endblock %}
