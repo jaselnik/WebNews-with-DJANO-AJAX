@@ -236,7 +236,9 @@
         fg: '#eceeef',
         text: 'Thumbnail'
       });
-
+    </script>
+    {% block jquery %}
+    <script>
       $(document).ready(function () {
           $('.hot-article').on('mouseenter', function () {
               var article_id = $(this).attr('data-id');
@@ -257,5 +259,6 @@
           })
       });
     </script>
+    {% endblock jquery %}
   </body>
 </html>

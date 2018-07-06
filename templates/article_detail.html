@@ -1,5 +1,7 @@
 {% extends 'home.html' %}
 
+{% load crispy_forms_tags %}
+
 {% block title %}
 <title>{{ article.title }}</title>
 {% endblock title %}
@@ -8,11 +10,94 @@
 {% endblock preview %}
 
 {% block content %}
-    <main role="main" class="container">
-        <h2>{{ article.title|upper }}</h2>
-        <hr>
-        <br>
+<main role="main" class="container">
+  <div class="row">
+    <div class="col-md-8 blog-main">
+      <h3 class="pb-3 mb-4 font-italic border-bottom">
+        View all articles about
+        <a href="{{ article.category.get_absolute_url }}">{{ article.category.name }}</a>
+      </h3>
+
+      <div class="blog-post">
+        <h2 class="blog-post-title">{{ article.title }}</h2>
+        <p class="blog-post-meta">January 1, 2014 by <a href="#">{{ article.author }}</a></p>
+
+        <p><img src="{{ article.image.url }}" alt=""></p>
         <p>{{ article.content }}</p>
-        <img src="{{ article.image.url }}" alt="" class="img-thumbnail">
-    </main>
-{% endblock %}
+        <hr>
+      <div class="container">
+          <div class="col-sm-12">
+              <div class="col-sm-7 col-sm-offset-2">
+                  <h6>Comments:</h6>
+                  <form action="" method="post">
+                      <input type="hidden" id="article" data-id="{{ article.pk }}">
+                      {% csrf_token %}
+                      {{ form|crispy }}
+                      <input type="submit" value="Post" id="add_comment">
+                  </form>
+                  <div class="comments">
+                  {% for comment in article_comments %}
+                  <div class="col-sm-12">
+                    <hr>
+                    <small>{{ comment.author.username }}</small>
+                    <p>{{ comment.content }}</p>
+                    <small>{{ comment.timestamp }}</small>
+                  </div>
+                  {% endfor %}
+                  </div>
+              </div>
+          </div>
+      </div>
+      </div>
+    </div>
+  </div>
+</main>
+{% endblock content %}
+
+{% block jquery %}
+<script>
+    $(document).ready(function () {
+        function getCookie(name) {
+            var cookieValue = null;
+            if (document.cookie && document.cookie !== '') {
+                var cookies = document.cookie.split(';');
+                for (var i = 0; i < cookies.length; i++) {
+                    var cookie = jQuery.trim(cookies[i]);
+                    // Does this cookie string begin with the name we want?
+                    if (cookie.substring(0, name.length + 1) === (name + '=')) {
+                        cookieValue = decodeURIComponent(cookie.substring(name.length + 1));
+                        break;
+                    }
+                }
+            }
+            return cookieValue;
+        }
+        var csrftoken = getCookie('csrftoken');
+        $('#add_comment').on('click', function (e) {
+            e.preventDefault();
+            var article_id = $('#article').attr('data-id');
+            var comment = $('#id_comment').val();
+
+            data = {
+                article_id: article_id,
+                comment: comment,
+                csrfmiddlewaretoken: csrftoken
+            };
+
+            $.ajax({
+                type: "POST",
+                url: "{% url 'main:add-comment' %}",
+                data: data,
+                dataType: 'json',
+                success: function (data) {
+                    $.each(data, function (field) {
+                        $('.comments').prepend('<div class="col-sm-12"><hr><small>'+[field]['author']+
+                        '</small><p>'+data[field]['comment']+'</p><small>'+data[field]['timestamp']+'</small></div>');
+                        $('#id_comment').val('');
+                    })
+                }
+            });
+        })
+    })
+</script>
+{% endblock jquery %}
