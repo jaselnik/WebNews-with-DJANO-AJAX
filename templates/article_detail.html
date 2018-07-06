@@ -1,0 +1,18 @@
+{% extends 'home.html' %}
+
+{% block title %}
+<title>{{ article.title }}</title>
+{% endblock title %}
+
+{% block preview %}
+{% endblock preview %}
+
+{% block content %}
+    <main role="main" class="container">
+        <h2>{{ article.title|upper }}</h2>
+        <hr>
+        <br>
+        <p>{{ article.content }}</p>
+        <img src="{{ article.image.url }}" alt="" class="img-thumbnail">
+    </main>
+{% endblock %}

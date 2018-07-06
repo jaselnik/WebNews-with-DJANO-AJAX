@@ -37,5 +37,9 @@ class Article(models.Model):
     likes = models.PositiveIntegerField(default=0)
     dislikes = models.PositiveIntegerField(default=0)
 
+    def get_absolute_url(self):
+        return reverse('main:article-detail', kwargs={'cat_slug': self.category.slug,
+                                                      'slug': self.slug})
+
     def __str__(self):
         return '{0}/{1}'.format(self.category.name or 'uncategory', self.title)

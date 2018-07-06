@@ -4,7 +4,10 @@
 <title>{{ category.name }}</title>
 {% endblock title %}
 
-{% block body %}
+{% block preview %}
+{% endblock preview %}
+
+{% block content %}
     <main role="main" class="container">
         <h2>{{ category.name|upper }}</h2>
         <hr>
@@ -16,16 +19,16 @@
             <div class="card-body d-flex flex-column align-items-start">
               <strong class="d-inline-block mb-2 text-primary">{{ category.name }}</strong>
               <h3 class="mb-0">
-                <a class="text-dark" href="#">{{ article.title }}</a>
+                <a class="text-dark" href="{{ article.get_absolute_url }}">{{ article.title|truncatechars:20 }}</a>
               </h3>
               <div class="mb-1 text-muted">Nov 13</div>
               <p class="card-text mb-auto">{{ article.content|truncatewords:15 }}</p>
-              <a href="#">Continue reading</a>
+              <a href="{{ article.get_absolute_url }}">Continue reading</a>
             </div>
-            <img class="card-img-right flex-auto d-none d-lg-block"
-                 data-src="holder.js/200x250?theme=thumb" alt="Thumbnail [200x250]"
+            <img class="card-img-right flex-auto d-none d-lg-block img-fluid"
                  style="width: 200px; height: 250px;"
-                 src="{{ article.image.url }}" data-holder-rendered="true">
+                 src="{{ article.image.url }}" data-holder-rendered="true"
+                 alt="Responsive image">
           </div>
         </div>
         {% endfor %}
