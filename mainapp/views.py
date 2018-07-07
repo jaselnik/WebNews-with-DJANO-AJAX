@@ -12,7 +12,7 @@ from .forms import CommentForm
 
 class MainListView(ListView):
 
-    template_name = 'home.html'
+    template_name = 'mainapp/home.html'
     model = Article
 
     def get_context_data(self, *, object_list=None, **kwargs):
@@ -26,7 +26,7 @@ class MainListView(ListView):
 
 class CategoryDetailView(DetailView, CategoryListMixin):
 
-    template_name = 'category_detail.html'
+    template_name = 'mainapp/category_detail.html'
     model = Category
 
     def get_context_data(self, *, object_list=None, **kwargs):
@@ -38,7 +38,7 @@ class CategoryDetailView(DetailView, CategoryListMixin):
 
 class ArticleDetailView(DetailView, CategoryListMixin):
 
-    template_name = 'article_detail.html'
+    template_name = 'mainapp/article_detail.html'
     model = Article
 
     def get_context_data(self, *, object_list=None, **kwargs):
@@ -73,7 +73,7 @@ class HotArticleImageView(View):
 
 class CommentSavingView(View):
 
-    template_name = 'article_detail.html'
+    template_name = 'mainapp/article_detail.html'
 
     def post(self, request, *args, **kwargs):
         article_id = self.request.POST.get('article_id')
@@ -81,7 +81,7 @@ class CommentSavingView(View):
         article = Article.objects.get(pk=article_id)
         new_comment = article.comments.create(author=request.user, content=comment)
         data = [{
-            'author': new_comment.author.username,
+            'author': new_comment.author.get_full_name(),
             'comment': new_comment.content,
             'timestamp': new_comment.timestamp,
         }]
@@ -90,7 +90,7 @@ class CommentSavingView(View):
 
 class UserMarkedArticleView(View):
 
-    template_name = 'articel_detail.html'
+    template_name = 'mainapp/article_detail.html'
 
     def get(self, request, *args, **kwargs):
         mark = self.request.GET.get('mark')

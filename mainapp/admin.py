@@ -1,5 +1,5 @@
 from django.contrib import admin
-from .models import Category, Article, Comment, Mark
+from .models import Category, Article, Comment, Mark, Repost
 
 
 @admin.register(Category)
@@ -14,3 +14,4 @@ class ArticleAdmin(admin.ModelAdmin):
 
 admin.site.register(Comment)
 admin.site.register(Mark)
+admin.site.register(Repost)

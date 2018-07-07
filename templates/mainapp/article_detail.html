@@ -1,13 +1,10 @@
-{% extends 'home.html' %}
+{% extends 'base.html' %}
 
 {% load crispy_forms_tags %}
 
 {% block title %}
 <title>{{ article.title }}</title>
 {% endblock title %}
-
-{% block preview %}
-{% endblock preview %}
 
 {% block content %}
 <main role="main" class="container">
@@ -42,7 +39,7 @@
                   {% for comment in article_comments %}
                   <div class="col-sm-12">
                     <hr>
-                    <small>{{ comment.author.username }}</small>
+                    <small>{{ comment.author.get_full_name }}</small>
                     <p>{{ comment.content }}</p>
                     <small>{{ comment.timestamp }}</small>
                   </div>
