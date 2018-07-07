@@ -43,10 +43,9 @@ class Article(models.Model):
     slug = models.SlugField()
     image = models.ImageField(upload_to=get_image_filename ,blank=True)
     content = models.TextField()
-    likes = models.PositiveIntegerField(default=0)
-    dislikes = models.PositiveIntegerField(default=0)
 
     comments = GenericRelation('comment')
+    marks = GenericRelation('mark')
 
     def get_absolute_url(self):
         return reverse('main:article-detail', kwargs={'cat_slug': self.category.slug,
@@ -68,6 +67,27 @@ class Comment(models.Model):
     object_id = models.PositiveIntegerField()
     content_object = GenericForeignKey('content_type', 'object_id')
 
+    def __str__(self):
+        return '{0}/{1}'.format(self.author.username, self.content[:10])
+
+
+class Mark(models.Model):
+    author = models.ForeignKey(
+        settings.AUTH_USER_MODEL,
+        on_delete=models.CASCADE,
+    )
+    MARK_CHOICES = (
+        ('L', 'LIKE',),
+        ('D', 'DISLIKE',),
+    )
+    status = models.CharField(max_length=7, choices=MARK_CHOICES)
+
+    content_type = models.ForeignKey(ContentType, on_delete=models.CASCADE)
+    object_id = models.PositiveIntegerField()
+    content_object = GenericForeignKey('content_type', 'object_id')
+
+    def __str__(self):
+        return '{0}/{1}'.format(self.status, self.author.username)
 
 
 """
