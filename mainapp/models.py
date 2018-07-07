@@ -90,6 +90,18 @@ class Mark(models.Model):
         return '{0}/{1}'.format(self.status, self.author.username)
 
 
+class Repost(models.Model):
+    author = models.ForeignKey(
+        settings.AUTH_USER_MODEL,
+        on_delete=models.CASCADE,
+    )
+    content = models.TextField(blank=True)
+
+    content_type = models.ForeignKey(ContentType, on_delete=models.CASCADE)
+    object_id = models.PositiveIntegerField()
+    content_object = GenericForeignKey('content_type', 'object_id')
+
+
 """
 
 from django.contrib.contenttypes.fields import GenericForeignKey, GenericRelation

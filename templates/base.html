@@ -1,0 +1,95 @@
+{% load static %}
+
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no">
+    <meta name="description" content="">
+    <meta name="author" content="">
+
+    {% block title %}
+    <title>AJAX NEWS</title>
+    {% endblock title %}
+
+    <!-- Bootstrap core CSS -->
+    <link href="{% static 'css/bootstrap.min.css' %}" rel="stylesheet">
+    <!-- Fontawesome core CSS -->
+    <link href="{% static 'font-awesome/css/fontawesome.css' %}" rel="stylesheet">
+    <link href="{% static 'font-awesome/css/all.css' %}" rel="stylesheet">
+
+
+    <!-- Custom styles for this template -->
+    <link href="https://fonts.googleapis.com/css?family=Playfair+Display:700,900" rel="stylesheet">
+    <link href="{% static 'css/blog/blog.css' %}" rel="stylesheet">
+
+    <link rel="stylesheet" href="{% static 'css/jaselnik/main.css' %}">
+  </head>
+
+  <body>
+
+    <div class="container">
+      {% block header %}
+      <header class="blog-header py-3">
+        <div class="row flex-nowrap justify-content-between align-items-center">
+          <div class="col-4 pt-1">
+            <a class="text-muted" href="#">Subscribe</a>
+          </div>
+          <div class="col-4 text-center">
+            <a class="blog-header-logo text-dark" href="/">AJAX NEWS</a>
+          </div>
+          <div class="col-4 d-flex justify-content-end align-items-center">
+            <a class="text-muted" href="#">
+              <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="mx-3"><circle cx="10.5" cy="10.5" r="7.5"></circle><line x1="21" y1="21" x2="15.8" y2="15.8"></line></svg>
+            </a>
+            {% if request.user.is_authenticated %}
+            <a class="btn btn-sm btn-outline-secondary" href="{% url 'accounts:logout' %}">Sign out</a>
+            {% else %}
+            <a class="btn btn-sm btn-outline-secondary" href="{% url 'accounts:login' %}">Sign in</a>
+            {% endif %}
+          </div>
+        </div>
+      </header>
+
+      <div class="nav-scroller py-1 mb-2">
+        <nav class="nav d-flex justify-content-between">
+            {% for category in categories %}
+            <a class="p-2 text-muted" href="{{ category.get_absolute_url }}">{{ category.name }}</a>
+            {% endfor %}
+        </nav>
+      </div>
+      {% endblock header %}
+
+      {% block preview %}
+      {% endblock preview%}
+    </div>
+
+    {% block content %}
+    {% endblock content %}
+
+    <footer class="blog-footer">
+      <p>Blog template built for <a href="https://getbootstrap.com/">Bootstrap</a> by <a href="https://twitter.com/mdo">@mdo</a>.</p>
+      <p>
+        <a href="#">Back to top</a>
+      </p>
+    </footer>
+
+    <!-- Bootstrap core JavaScript
+    ================================================== -->
+    <!-- Placed at the end of the document so the pages load faster -->
+    <script src="{% static 'js/jquery-3.3.1.min.js' %}"></script>
+    <script>window.jQuery || document.write('<script src="{% static 'assets/js/vendor/jquery-slim.min.js' %}"><\/script>')</script>
+    <script src="{% static 'assets/js/vendor/popper.min.js' %}"></script>
+    <script src="{% static 'js/bootstrap.min.js' %}"></script>
+    <script src="{% static 'assets/js/vendor/holder.min.js' %}"></script>
+    <script>
+      Holder.addTheme('thumb', {
+        bg: '#55595c',
+        fg: '#eceeef',
+        text: 'Thumbnail'
+      });
+    </script>
+    {% block jquery %}
+    {% endblock jquery %}
+  </body>
+</html>
