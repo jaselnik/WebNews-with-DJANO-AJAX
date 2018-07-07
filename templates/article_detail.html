@@ -22,11 +22,14 @@
         <h2 class="blog-post-title">{{ article.title }}</h2>
         <p class="blog-post-meta">January 1, 2014 by <a href="#">{{ article.author }}</a></p>
 
-        <p><img src="{{ article.image.url }}" alt=""></p>
+        <p><img src="{{ article.image.url }}" alt="" style="widht:100%; height:500px"></p>
         <p>{{ article.content }}</p>
         <hr>
       <div class="container">
           <div class="col-sm-12">
+              <a href="" id="like"><i class="far fa-thumbs-up" style="color: #00cc00"></i></a><span id="liked">{{ article_likes }}</span>
+              <a href="" id="dislike" style="padding-left: 25px"><i class="far fa-thumbs-down" style="color: #a41515"></i></a><span id="disliked">{{ article_dislikes }}</span>
+              <hr>
               <div class="col-sm-7 col-sm-offset-2">
                   <h6>Comments:</h6>
                   <form action="" method="post">
@@ -97,6 +100,52 @@
                     })
                 }
             });
+        })
+    })
+</script>
+<script>
+    $(document).ready(function () {
+        $('#like').on('click', function (e) {
+            e.preventDefault();
+            var mark = 'L';
+            var article_id = $('#article').attr('data-id');
+
+            data = {
+                mark: mark,
+                article_id: article_id
+            };
+
+            $.ajax({
+                type: "GET",
+                url: "{% url 'main:user-marked-article' %}",
+                data: data,
+                dataType: "json",
+                success: function (data) {
+                    $('#liked').html(data.article_likes);
+                    $('#disliked').html(data.article_dislikes);
+                }
+            })
+        });
+        $('#dislike').on('click', function (e) {
+            e.preventDefault();
+            var mark = 'D';
+            var article_id = $('#article').attr('data-id');
+
+            data = {
+                mark: mark,
+                article_id: article_id
+            };
+
+            $.ajax({
+                type: "GET",
+                url: "{% url 'main:user-marked-article' %}",
+                data: data,
+                dataType: "json",
+                success: function (data) {
+                    $('#liked').html(data.article_likes);
+                    $('#disliked').html(data.article_dislikes);
+                }
+            })
         })
     })
 </script>

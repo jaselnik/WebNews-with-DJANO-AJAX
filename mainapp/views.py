@@ -3,6 +3,7 @@ from django.views.generic.detail import DetailView
 from django.views import View
 from django.http.response import JsonResponse
 from django.shortcuts import get_object_or_404
+from django.db.models import Count
 
 from .models import Article, Category
 from .mixins import CategoryListMixin
@@ -45,6 +46,16 @@ class ArticleDetailView(DetailView, CategoryListMixin):
         context['article'] = self.get_object()
         context['article_comments'] = self.get_object().comments.all().order_by("-timestamp")
         context['form'] = CommentForm()
+        marks_count = self.get_object().marks.all().values('status').annotate(count=Count('status'))
+        likes_count = 0
+        dislikes_count = 0
+        for mark_count in marks_count:
+            if mark_count['status'] in ('L', 'LIKE'):
+                likes_count += mark_count['count']
+            elif mark_count['status'] in ('D', 'DISLIKE'):
+                dislikes_count += mark_count['count']
+        context['article_likes'] = likes_count
+        context['article_dislikes'] = dislikes_count
         return context
 
 
@@ -66,9 +77,8 @@ class CommentSavingView(View):
 
     def post(self, request, *args, **kwargs):
         article_id = self.request.POST.get('article_id')
-        comment = self.request.POST.get('comment');
-        article = Article.objects.get(id=article_id)
-        new_comment = article.comments
+        comment = self.request.POST.get('comment')
+        article = Article.objects.get(pk=article_id)
         new_comment = article.comments.create(author=request.user, content=comment)
         data = [{
             'author': new_comment.author.username,
@@ -76,3 +86,31 @@ class CommentSavingView(View):
             'timestamp': new_comment.timestamp,
         }]
         return JsonResponse(data, safe=False)
+
+
+class UserMarkedArticleView(View):
+
+    template_name = 'articel_detail.html'
+
+    def get(self, request, *args, **kwargs):
+        mark = self.request.GET.get('mark')
+        article_id = self.request.GET.get('article_id')
+        article = Article.objects.get(pk=article_id)
+        mark = mark.upper()
+        if mark in ('D', 'L', 'DISLIKE', 'LIKE', ):
+            new_mark = article.marks.create(author=request.user, status=mark[0])
+            marks_count = article.marks.all().values('status').annotate(count=Count('status'))
+            likes_count = 0
+            dislikes_count = 0
+            for mark_count in marks_count:
+                if mark_count['status'] in ('L', 'LIKE'):
+                    likes_count += mark_count['count']
+                elif mark_count['status'] in ('D', 'DISLIKE'):
+                    dislikes_count += mark_count['count']
+            data = {
+                'article_id': article_id,
+                'article_likes': likes_count,
+                'article_dislikes': dislikes_count,
+                'status': 'OK',
+            }
+            return JsonResponse(data)

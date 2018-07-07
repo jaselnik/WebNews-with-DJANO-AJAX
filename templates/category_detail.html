@@ -25,8 +25,7 @@
               <p class="card-text mb-auto">{{ article.content|truncatewords:15 }}</p>
               <a href="{{ article.get_absolute_url }}">Continue reading</a>
             </div>
-            <img class="card-img-right flex-auto d-none d-lg-block img-fluid"
-                 style="width: 200px; height: 250px;"
+            <img class="card-img-right flex-auto d-none d-lg-block img-fluid img-preview image-preview"
                  src="{{ article.image.url }}" data-holder-rendered="true"
                  alt="Responsive image">
           </div>
