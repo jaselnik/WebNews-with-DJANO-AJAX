@@ -47,34 +47,41 @@
       </div> <!-- End Col 1 -->
 
       <!-- Second column - for small and extra-small screens, will use whatever # cols is available -->
-      <div class="col-md-8 col-sm-* col-xs-*">
+      <div class="col-md-7 col-sm-* col-xs-*">
 
         <!-- "Lead" text at top of column. -->
-        <p class="lead">Lorem ipsum dolor sit amet, consectetur adipiscing elit. Integer ac purus lacus. Curabitur lobortis iaculis porta. Nullam vel condimentum dolor. Etiam tempor arcu ut urna mattis, at tristique sapien fringilla. Fusce viverra, odio sed efficitur dapibus, turpis orci posuere tellus, sed gravida dui risus at sapien. Duis faucibus non elit et interdum. Nam placerat nunc id massa placerat efficitur. Maecenas ac felis et elit vulputate posuere a non urna. Suspendisse mattis vitae nisl sed scelerisque. Duis eu risus varius, laoreet est nec, maximus dolor.</p>
 
-        <!-- Horizontal rule to add some spacing between the "lead" and body text -->
-        <hr />
-
-
-        <!-- Body text (paragraph 1) -->
-        <p>
-          Vestibulum ac dui ut arcu pulvinar aliquet. In hac habitasse platea dictumst. Fusce porttitor at quam sit amet placerat. Phasellus placerat nunc vitae enim bibendum interdum. Nunc dapibus nisi a leo tincidunt, vitae dapibus nulla pretium. Etiam eu magna felis. Sed eleifend ligula eget augue consectetur varius. Etiam cursus ex mollis, efficitur eros non, molestie turpis. Nunc malesuada porta semper. Curabitur interdum finibus tortor at semper. Aliquam ornare ut tellus sit amet vehicula. Pellentesque habitant morbi tristique senectus et netus et malesuada fames ac turpis egestas. Proin risus lorem, dignissim id auctor ac, fringilla sit amet erat. In quis accumsan urna, ut ullamcorper risus. Duis id tempor libero.
-        </p>
-
-        <!-- Body text (paragraph 2) -->
-        <p>
-        Aenean hendrerit augue id venenatis mollis. Nunc euismod lorem id interdum tempor. Maecenas euismod euismod arcu blandit rhoncus. Aliquam mattis ornare enim, id molestie nibh dapibus eget. Donec accumsan libero ac ante lobortis, at porttitor neque pretium. Phasellus quis nibh dolor. In nunc mi, cursus quis nunc sit amet, blandit pulvinar nisi. Aenean vel egestas nisl, eu bibendum enim. Mauris ut turpis vel lacus sollicitudin ultrices eu sit amet sapien. Fusce facilisis tempus ligula, et laoreet ligula fringilla eget.
-        </p>
-
-        <!-- Body text (paragraph 3) -->
-        <p>
-        Nam odio leo, convallis non suscipit eu, ullamcorper a ipsum. Morbi vel porttitor arcu. Praesent sed urna consequat, eleifend nisl in, sodales lectus. Praesent diam neque, efficitur vitae euismod sodales, facilisis interdum orci. Quisque ultrices lacus id lorem feugiat auctor. Ut elementum placerat pulvinar. Donec vel nisi erat. Etiam leo dolor, scelerisque vel congue a, tempor nec mi. Vivamus fringilla non lectus non suscipit. Vestibulum iaculis turpis sit amet egestas semper. Suspendisse non ipsum nec purus laoreet venenatis. Nulla vel turpis porta, consequat arcu vitae, condimentum ante.
-        </p>
-
-        <!-- Body text (paragraph 4) -->
-        <p>
-        Pellentesque interdum faucibus faucibus. Donec eu mi et erat semper molestie. Donec volutpat, leo sed bibendum eleifend, nibh odio elementum urna, vel mattis ipsum est vel orci. Proin ac porta nisl, at ultrices enim. Maecenas eu nisl venenatis, accumsan odio ut, ultricies felis. Fusce eget mattis velit, id consectetur nisi. In pharetra arcu orci, ut ultricies ligula pellentesque eget. Suspendisse imperdiet libero magna, in lacinia nibh rutrum ut. Nam non augue a lorem aliquet volutpat. Vivamus vel varius dolor.</p>
-
+        {% for repost in reposts %}
+        <div class="card">
+          <div class="card-header">
+            {{ repost.content }}
+          </div>
+          <div class="card-body">
+            <div class="row">
+              <div class="col-md-10">
+                <div class="card flex-md-row mb-4 box-shadow h-md-250">
+                    <div class="card-body d-flex flex-column align-items-start">
+                        <strong class="d-inline-block mb-2 text-primary">{{ repost.get_object_for_content_type.category.name }}</strong>
+                        <h3 class="mb-0">
+                          <a class="text-dark" href="{{ repost.get_object_for_content_type.get_absolute_url }}">{{ repost.get_object_for_content_type.title|truncatechars:20 }}</a>
+                        </h3>
+                        <div class="mb-1 text-muted">Nov 13</div>
+                        <p class="card-text mb-auto">{{ repost.get_object_for_content_type.content|truncatewords:15 }}</p>
+                        <a href="{{ repost.get_object_for_content_type.get_absolute_url }}">Continue reading</a>
+                    </div>
+                    <img class="card-img-right flex-auto d-none d-lg-block img-fluid img-preview image-preview"
+                         src="{{ repost.get_object_for_content_type.image.url }}" data-holder-rendered="true"
+                         alt="Responsive image">
+                </div>
+              </div>
+            </div>
+          </div>
+          <div class="card-footer text-muted">
+            {{ repost.timestamp }}
+          </div>
+        </div>
+        <br>
+        {% endfor %}
 
       </div> <!-- End column 2 -->
 

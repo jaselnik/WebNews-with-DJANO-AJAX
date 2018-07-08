@@ -46,6 +46,7 @@ class Article(models.Model):
 
     comments = GenericRelation('comment')
     marks = GenericRelation('mark')
+    reposts = GenericRelation('repost')
 
     def get_absolute_url(self):
         return reverse('main:article-detail', kwargs={'cat_slug': self.category.slug,
@@ -96,10 +97,21 @@ class Repost(models.Model):
         on_delete=models.CASCADE,
     )
     content = models.TextField(blank=True)
+    timestamp = models.DateTimeField(auto_now_add=True, auto_now=False)
 
     content_type = models.ForeignKey(ContentType, on_delete=models.CASCADE)
     object_id = models.PositiveIntegerField()
     content_object = GenericForeignKey('content_type', 'object_id')
+
+    def get_object_for_content_type(self):
+        ct = self.content_type
+        model = ct.model_class()
+        pk = self.object_id
+        object = model.objects.get(pk=pk)
+        return object
+
+    def __str__(self):
+        return '{0}/{1}'.format(self.author.username, self.content or '<BLANK>')
 
 
 """
