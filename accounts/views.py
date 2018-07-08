@@ -71,7 +71,7 @@ class ProfileView(TemplateView):
     def get(self, request, *args, **kwargs):
         pk = kwargs.get('pk')
         user = User.objects.get(pk=pk)
-        reposts = Repost.objects.filter(author=user)
+        reposts = Repost.objects.filter(author=user).order_by('-timestamp')
         args = {
             'user': user,
             'reposts': reposts

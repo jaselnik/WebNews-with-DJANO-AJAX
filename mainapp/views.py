@@ -5,7 +5,7 @@ from django.http.response import JsonResponse
 from django.shortcuts import get_object_or_404
 from django.db.models import Count
 
-from .models import Article, Category
+from .models import Article, Category, Repost
 from .mixins import CategoryListMixin
 from .forms import CommentForm, RepostForm
 
@@ -57,7 +57,7 @@ class ArticleDetailView(DetailView, CategoryListMixin):
                 dislikes_count += mark_count['count']
         context['article_likes'] = likes_count
         context['article_dislikes'] = dislikes_count
-        context['article_reposts'] = self.get_object().reposts.all().count()
+        context['article_reposts'] = self.get_object().reposts.all().count()  # NEED IMPROVE
         return context
 
 
@@ -140,3 +140,28 @@ class UserRepostArticleView(View):
             'article_reposts': article_reposts
         }
         return JsonResponse(data)
+
+
+class UserMarkedRepostView(View):
+
+    def get(self, request, *args, **kwargs):
+        mark = self.request.GET.get('mark')
+        repost_id = self.request.GET.get('repost_id')
+        repost = Repost.objects.get(pk=repost_id)
+
+        print(request.GET)
+        print(repost_id)
+        print(repost)
+
+        mark = mark.upper()
+        if mark in ('D', 'L', 'DISLIKE', 'LIKE', ):
+            new_mark = repost.marks.create(author=request.user, status=mark[0])
+            likes_count = repost.get_likes()
+            dislikes_count = repost.get_dislikes()
+            data = {
+                'repost_id': repost_id,
+                'repost_likes': likes_count,
+                'repost_dislikes': dislikes_count,
+                'status': 'OK',
+            }
+            return JsonResponse(data)

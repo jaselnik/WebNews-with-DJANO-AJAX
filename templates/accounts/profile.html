@@ -50,6 +50,7 @@
       <div class="col-md-7 col-sm-* col-xs-*">
 
         <!-- "Lead" text at top of column. -->
+        <h5 class="text-center text-info">USER TAPE</h5><hr>
 
         {% for repost in reposts %}
         <div class="card">
@@ -77,7 +78,13 @@
             </div>
           </div>
           <div class="card-footer text-muted">
-            {{ repost.timestamp }}
+            <div class="d-flex justify-content-between bd-highlight mb-3">
+              <div class="p-2 bd-highlight">{{ repost.timestamp }}</div>
+              <div class="p-2 bd-highlight justify-content-end">
+                <a href="#" class="like" data-id="{{ repost.pk }}"><i class="far fa-thumbs-up" style="color: #00cc00"></i></a><span id="liked-{{ repost.pk }}">{{ repost.get_likes }}</span>
+                <a href="#" class="dislike" data-id="{{ repost.pk }}" style="padding-left: 25px"><i class="far fa-thumbs-down" style="color: #a41515"></i></a><span id="disliked-{{ repost.pk }}">{{ repost.get_dislikes }}</span>
+              </div>
+            </div>
           </div>
         </div>
         <br>
@@ -89,3 +96,52 @@
 
 </div> <!-- End main container -->
 {% endblock content %}
+
+{% block jquery %}
+<script>
+    $(document).ready(function () {
+        $('.like').click(function (e) {
+            e.preventDefault();
+            var mark = 'L';
+            var repost_id = $(this).attr('data-id');
+
+            data = {
+                mark: mark,
+                repost_id: repost_id
+            };
+
+            $.ajax({
+                type: "GET",
+                url: "{% url 'main:user-marked-repost' %}",
+                data: data,
+                dataType: "json",
+                success: function (data) {
+                    $('#liked-'+data.repost_id).html(data.repost_likes);
+                    $('#disliked'+data.repost_id).html(data.repost_dislikes);
+                }
+            })
+        });
+        $('.dislike').click(function (e) {
+            e.preventDefault();
+            var mark = 'D';
+            var repost_id = $(this).attr('data-id');
+
+            data = {
+                mark: mark,
+                repost_id: repost_id
+            };
+
+            $.ajax({
+                type: "GET",
+                url: "{% url 'main:user-marked-repost' %}",
+                data: data,
+                dataType: "json",
+                success: function (data) {
+                    $('#liked-'+data.repost_id).html(data.repost_likes);
+                    $('#disliked-'+data.repost_id).html(data.repost_dislikes);
+                }
+            })
+        });
+    })
+</script>
+{% endblock jquery %}
