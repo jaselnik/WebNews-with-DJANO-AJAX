@@ -3,6 +3,7 @@ from django.urls import reverse
 from django.conf import settings
 from django.contrib.contenttypes.models import ContentType
 from django.contrib.contenttypes.fields import GenericForeignKey, GenericRelation
+from django.db.models import Count
 
 import hashlib
 import os
@@ -99,6 +100,8 @@ class Repost(models.Model):
     content = models.TextField(blank=True)
     timestamp = models.DateTimeField(auto_now_add=True, auto_now=False)
 
+    marks = GenericRelation('mark')
+
     content_type = models.ForeignKey(ContentType, on_delete=models.CASCADE)
     object_id = models.PositiveIntegerField()
     content_object = GenericForeignKey('content_type', 'object_id')
@@ -109,6 +112,24 @@ class Repost(models.Model):
         pk = self.object_id
         object = model.objects.get(pk=pk)
         return object
+
+    def get_likes(self):
+        marks_count = self.marks.all().values('status').annotate(mark_count=Count('status'))
+        likes_count = 0
+        for mark_count in marks_count:
+            if mark_count['status'] in ('L', 'LIKE'):
+                likes_count += mark_count['mark_count']
+        # likes_count = self.marks.filter(status='L').count()
+        return likes_count
+
+    def get_dislikes(self):
+        marks_count = self.marks.all().values('status').annotate(mark_count=Count('status'))
+        dislikes_count = 0
+        for mark_count in marks_count:
+            if mark_count['status'] in ('D', 'DISLIKE'):
+                dislikes_count += mark_count['mark_count']
+        # dislikes_count = self.marks.filter(status='D').count()
+        return dislikes_count
 
     def __str__(self):
         return '{0}/{1}'.format(self.author.username, self.content or '<BLANK>')
