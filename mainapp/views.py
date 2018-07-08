@@ -7,7 +7,7 @@ from django.db.models import Count
 
 from .models import Article, Category
 from .mixins import CategoryListMixin
-from .forms import CommentForm
+from .forms import CommentForm, RepostForm
 
 
 class MainListView(ListView):
@@ -45,7 +45,8 @@ class ArticleDetailView(DetailView, CategoryListMixin):
         context = super(ArticleDetailView, self).get_context_data()
         context['article'] = self.get_object()
         context['article_comments'] = self.get_object().comments.all().order_by("-timestamp")
-        context['form'] = CommentForm()
+        context['comment_form'] = CommentForm()
+        context['repost_form'] = RepostForm()
         marks_count = self.get_object().marks.all().values('status').annotate(count=Count('status'))
         likes_count = 0
         dislikes_count = 0
@@ -56,6 +57,7 @@ class ArticleDetailView(DetailView, CategoryListMixin):
                 dislikes_count += mark_count['count']
         context['article_likes'] = likes_count
         context['article_dislikes'] = dislikes_count
+        context['article_reposts'] = self.get_object().reposts.all().count()
         return context
 
 
@@ -114,3 +116,27 @@ class UserMarkedArticleView(View):
                 'status': 'OK',
             }
             return JsonResponse(data)
+
+
+class UserRepostArticleView(View):
+
+    def post(self, request, *args, **kwargs):
+        article_id = self.request.POST.get('article_id')
+        comment = self.request.POST.get('comment')
+        if not article_id:
+            data = {
+                'status': 'FATAL'
+            }
+            return JsonResponse(data)
+        article = Article.objects.get(pk=article_id)
+        if not article:
+            data = {
+                'status': 'FATAL'
+            }
+            return JsonResponse(data)
+        new_repost = article.reposts.create(author=request.user, content=comment or '')
+        article_reposts = article.reposts.all().count()
+        data = {
+            'article_reposts': article_reposts
+        }
+        return JsonResponse(data)

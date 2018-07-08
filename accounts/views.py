@@ -1,11 +1,13 @@
 from django.shortcuts import render, redirect
 from django.contrib.auth import update_session_auth_hash
 from django.contrib.auth.models import User
-from django.contrib.auth.forms import UserChangeForm, PasswordChangeForm
+from django.contrib.auth.forms import PasswordChangeForm
 from django.contrib.auth.decorators import login_required
 from django.views.generic import TemplateView
+from django.contrib.contenttypes.models import ContentType
 
 from .forms import RegistrationForm, EditProfileForm
+from mainapp.models import Repost
 
 
 class RegisterView(TemplateView):
@@ -62,7 +64,6 @@ class ChangePasswordView(TemplateView):
             return redirect('accounts:change_password')
 
 
-# @login_required
 class ProfileView(TemplateView):
 
     template_name = 'accounts/profile.html'
@@ -70,5 +71,9 @@ class ProfileView(TemplateView):
     def get(self, request, *args, **kwargs):
         pk = kwargs.get('pk')
         user = User.objects.get(pk=pk)
-        args = {'user': user}
+        reposts = Repost.objects.filter(author=user)
+        args = {
+            'user': user,
+            'reposts': reposts
+        }
         return render(request, self.template_name, args)
