@@ -3,7 +3,7 @@ from django.urls import path, re_path
 from .views import (
     MainListView, CategoryDetailView, ArticleDetailView,
     HotArticleImageView, CommentSavingView,
-    UserMarkedArticleView, UserRepostArticleView, UserMarkedRepostView
+    UserMarkedArticleView, UserRepostArticleView, UserMarkedSomethingView
 )
 
 
@@ -14,7 +14,7 @@ urlpatterns = [
     path('hot-image-view/', HotArticleImageView.as_view(), name='get-hot-image'),
     path('user-marked-article/', UserMarkedArticleView.as_view(), name='user-marked-article'),
     path('user-repost-article/', UserRepostArticleView.as_view(), name='user-repost-article'),
-    path('user-marked-repost/', UserMarkedRepostView.as_view(), name='user-marked-repost'),
+    path('user-marked-something/', UserMarkedSomethingView.as_view(), name='user-marked-something'),
     path('', MainListView.as_view(), name='home'),
     re_path('^(?P<slug>[-\w]+)/$', CategoryDetailView.as_view(), name='category-detail'),
     re_path('^(?P<cat_slug>[-\w]+)/(?P<slug>[-\w]+)/$', ArticleDetailView.as_view(), name='article-detail'),
