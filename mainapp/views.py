@@ -4,8 +4,10 @@ from django.views import View
 from django.http.response import JsonResponse
 from django.shortcuts import get_object_or_404
 from django.db.models import Count
+from django.core.exceptions import ObjectDoesNotExist
+from django.contrib.contenttypes.models import ContentType
 
-from .models import Article, Category, Repost
+from .models import Article, Category, Repost, Mark
 from .mixins import CategoryListMixin
 from .forms import CommentForm, RepostForm
 
@@ -48,8 +50,8 @@ class ArticleDetailView(DetailView, CategoryListMixin):
         context['comment_form'] = CommentForm()
         context['repost_form'] = RepostForm()
         marks_count = self.get_object().marks.all().values('status').annotate(count=Count('status'))
-        likes_count = 0
-        dislikes_count = 0
+        likes_count = Mark.get_related_likes(model_obj=self.get_object())
+        dislikes_count = Mark.get_related_dislikes(model_obj=self.get_object())
         for mark_count in marks_count:
             if mark_count['status'] in ('L', 'LIKE'):
                 likes_count += mark_count['count']
@@ -82,9 +84,14 @@ class CommentSavingView(View):
         comment = self.request.POST.get('comment')
         article = Article.objects.get(pk=article_id)
         new_comment = article.comments.create(author=request.user, content=comment)
+        likes_count = new_comment.get_likes()
+        dislikes_count = new_comment.get_dislikes()
         data = [{
             'author': new_comment.author.get_full_name(),
             'comment': new_comment.content,
+            'comment_id': new_comment.pk,
+            'comment_likes': likes_count,
+            'comment_dislikes': dislikes_count,
             'timestamp': new_comment.timestamp,
         }]
         return JsonResponse(data, safe=False)
@@ -92,25 +99,28 @@ class CommentSavingView(View):
 
 class UserMarkedArticleView(View):
 
-    template_name = 'mainapp/article_detail.html'
+    model = Article
+    model_mark = Mark
+    model_obj = None
 
     def get(self, request, *args, **kwargs):
+        author = request.user
         mark = self.request.GET.get('mark')
-        article_id = self.request.GET.get('article_id')
-        article = Article.objects.get(pk=article_id)
+        obj_id = self.request.GET.get('article_id')
+        self.model_obj = self.model.objects.get(pk=obj_id)
+
         mark = mark.upper()
         if mark in ('D', 'L', 'DISLIKE', 'LIKE', ):
-            new_mark = article.marks.create(author=request.user, status=mark[0])
-            marks_count = article.marks.all().values('status').annotate(count=Count('status'))
-            likes_count = 0
-            dislikes_count = 0
-            for mark_count in marks_count:
-                if mark_count['status'] in ('L', 'LIKE'):
-                    likes_count += mark_count['count']
-                elif mark_count['status'] in ('D', 'DISLIKE'):
-                    dislikes_count += mark_count['count']
+            try:
+                mark_obj = self.model_obj.marks.get(author=author)
+                if (mark_obj.object_id == int(obj_id)) and (mark_obj.content_type.model_class() == self.model):
+                    print(mark_obj.delete_or_switch(mark))
+            except ObjectDoesNotExist:
+                new_mark = self.model_obj.marks.create(author=request.user, status=mark[0])
+            likes_count = self.model_mark.get_related_likes(model_obj=self.model_obj)
+            dislikes_count = self.model_mark.get_related_dislikes(model_obj=self.model_obj)
             data = {
-                'article_id': article_id,
+                'article_id': obj_id,
                 'article_likes': likes_count,
                 'article_dislikes': dislikes_count,
                 'status': 'OK',
@@ -142,26 +152,36 @@ class UserRepostArticleView(View):
         return JsonResponse(data)
 
 
-class UserMarkedRepostView(View):
+class UserMarkedSomethingView(View):
+
+    model = None
+    model_obj = None
+    model_mark = Mark
 
     def get(self, request, *args, **kwargs):
+        author = request.user
         mark = self.request.GET.get('mark')
-        repost_id = self.request.GET.get('repost_id')
-        repost = Repost.objects.get(pk=repost_id)
-
-        print(request.GET)
-        print(repost_id)
-        print(repost)
+        obj_id = self.request.GET.get('obj_id')
+        model_type = self.request.GET.get('model_type')
+        ct = ContentType.objects.get(model=model_type)
+        self.model = ct.model_class()
+        self.model_obj = self.model.objects.get(pk=obj_id)
 
         mark = mark.upper()
         if mark in ('D', 'L', 'DISLIKE', 'LIKE', ):
-            new_mark = repost.marks.create(author=request.user, status=mark[0])
-            likes_count = repost.get_likes()
-            dislikes_count = repost.get_dislikes()
+            try:
+                mark_obj = self.model_obj.marks.get(author=author)
+                if (mark_obj.object_id == int(obj_id)) and (mark_obj.content_type.model_class() == self.model):
+                    print(mark_obj.delete_or_switch(mark))
+            except ObjectDoesNotExist:
+                new_mark = self.model_obj.marks.create(author=request.user, status=mark[0])
+            likes_count = self.model_mark.get_related_likes(model_obj=self.model_obj)
+            dislikes_count = self.model_mark.get_related_dislikes(model_obj=self.model_obj)
             data = {
-                'repost_id': repost_id,
-                'repost_likes': likes_count,
-                'repost_dislikes': dislikes_count,
+                'obj_id': obj_id,
+                'obj_likes': likes_count,
+                'obj_dislikes': dislikes_count,
+                'model_type': model_type,
                 'status': 'OK',
             }
             return JsonResponse(data)

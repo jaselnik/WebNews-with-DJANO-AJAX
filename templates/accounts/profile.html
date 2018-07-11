@@ -81,8 +81,8 @@
             <div class="d-flex justify-content-between bd-highlight mb-3">
               <div class="p-2 bd-highlight">{{ repost.timestamp }}</div>
               <div class="p-2 bd-highlight justify-content-end">
-                <a href="#" class="like" data-id="{{ repost.pk }}"><i class="far fa-thumbs-up" style="color: #00cc00"></i></a><span id="liked-{{ repost.pk }}">{{ repost.get_likes }}</span>
-                <a href="#" class="dislike" data-id="{{ repost.pk }}" style="padding-left: 25px"><i class="far fa-thumbs-down" style="color: #a41515"></i></a><span id="disliked-{{ repost.pk }}">{{ repost.get_dislikes }}</span>
+                <a href="#" class="like" data-id="{{ repost.pk }}" data-type="repost"><i class="far fa-thumbs-up" style="color: #00cc00"></i></a><span id="repost-liked-{{ repost.pk }}">{{ repost.get_likes }}</span>
+                <a href="#" class="dislike" data-id="{{ repost.pk }}" data-type="repost" style="padding-left: 25px"><i class="far fa-thumbs-down" style="color: #a41515"></i></a><span id="repost-disliked-{{ repost.pk }}">{{ repost.get_dislikes }}</span>
               </div>
             </div>
           </div>
@@ -103,42 +103,48 @@
         $('.like').click(function (e) {
             e.preventDefault();
             var mark = 'L';
-            var repost_id = $(this).attr('data-id');
+            var obj_id = $(this).attr('data-id');
+            var model_type = $(this).attr('data-type');
 
             data = {
                 mark: mark,
-                repost_id: repost_id
+                obj_id: obj_id,
+                model_type: model_type
             };
 
             $.ajax({
                 type: "GET",
-                url: "{% url 'main:user-marked-repost' %}",
+                url: "{% url 'main:user-marked-something' %}",
                 data: data,
                 dataType: "json",
                 success: function (data) {
-                    $('#liked-'+data.repost_id).html(data.repost_likes);
-                    $('#disliked'+data.repost_id).html(data.repost_dislikes);
+                    console.log(data);
+                    $('#'+data.model_type+'-liked-'+data.obj_id).html(data.obj_likes);
+                    $('#'+data.model_type+'-disliked-'+data.obj_id).html(data.obj_dislikes);
                 }
             })
         });
         $('.dislike').click(function (e) {
             e.preventDefault();
             var mark = 'D';
-            var repost_id = $(this).attr('data-id');
+            var obj_id = $(this).attr('data-id');
+            var model_type = $(this).attr('data-type');
 
             data = {
                 mark: mark,
-                repost_id: repost_id
+                obj_id: obj_id,
+                model_type: model_type
             };
 
             $.ajax({
                 type: "GET",
-                url: "{% url 'main:user-marked-repost' %}",
+                url: "{% url 'main:user-marked-something' %}",
                 data: data,
                 dataType: "json",
                 success: function (data) {
-                    $('#liked-'+data.repost_id).html(data.repost_likes);
-                    $('#disliked-'+data.repost_id).html(data.repost_dislikes);
+                    console.log(data);
+                    $('#'+data.model_type+'-liked-'+data.obj_id).html(data.obj_likes);
+                    $('#'+data.model_type+'-disliked-'+data.obj_id).html(data.obj_dislikes);
                 }
             })
         });

@@ -53,6 +53,12 @@ class Article(models.Model):
         return reverse('main:article-detail', kwargs={'cat_slug': self.category.slug,
                                                       'slug': self.slug})
 
+    def get_likes(self):
+        return Mark.get_related_likes(self)
+
+    def get_dislikes(self):
+        return Mark.get_related_dislikes(self)
+
     def __str__(self):
         return '{0}/{1}'.format(self.category.name or 'uncategory', self.title)
 
@@ -65,9 +71,17 @@ class Comment(models.Model):
     content = models.TextField()
     timestamp = models.DateTimeField(auto_now_add=True, auto_now=False)
 
+    marks = GenericRelation('mark')
+
     content_type = models.ForeignKey(ContentType, on_delete=models.CASCADE)
     object_id = models.PositiveIntegerField()
     content_object = GenericForeignKey('content_type', 'object_id')
+
+    def get_likes(self):
+        return Mark.get_related_likes(self)
+
+    def get_dislikes(self):
+        return Mark.get_related_dislikes(self)
 
     def __str__(self):
         return '{0}/{1}'.format(self.author.username, self.content[:10])
@@ -88,6 +102,38 @@ class Mark(models.Model):
     object_id = models.PositiveIntegerField()
     content_object = GenericForeignKey('content_type', 'object_id')
 
+    def delete_or_switch(self, status):
+        status = status[0]
+        if status == self.status:
+            print(self)
+            self.delete()
+            print(self)
+            return 'DELETED'
+        else:
+            self.status = status
+            self.save()
+            return 'SWITCHED'
+
+    @staticmethod
+    def get_related_likes(model_obj):
+        marks_count = model_obj.marks.all().values('status').annotate(mark_count=Count('status'))
+        likes_count = 0
+        for mark_count in marks_count:
+            if mark_count['status'] in ('L', 'LIKE'):
+                likes_count += mark_count['mark_count']
+        # likes_count = self.marks.filter(status='L').count()
+        return likes_count
+
+    @staticmethod
+    def get_related_dislikes(model_obj):
+        marks_count = model_obj.marks.all().values('status').annotate(mark_count=Count('status'))
+        dislikes_count = 0
+        for mark_count in marks_count:
+            if mark_count['status'] in ('D', 'DISLIKE'):
+                dislikes_count += mark_count['mark_count']
+        # dislikes_count = self.marks.filter(status='D').count()
+        return dislikes_count
+
     def __str__(self):
         return '{0}/{1}'.format(self.status, self.author.username)
 
@@ -107,6 +153,7 @@ class Repost(models.Model):
     content_object = GenericForeignKey('content_type', 'object_id')
 
     def get_object_for_content_type(self):
+        print(self.content_object)   # prints 4 times WHY???
         ct = self.content_type
         model = ct.model_class()
         pk = self.object_id
@@ -114,22 +161,10 @@ class Repost(models.Model):
         return object
 
     def get_likes(self):
-        marks_count = self.marks.all().values('status').annotate(mark_count=Count('status'))
-        likes_count = 0
-        for mark_count in marks_count:
-            if mark_count['status'] in ('L', 'LIKE'):
-                likes_count += mark_count['mark_count']
-        # likes_count = self.marks.filter(status='L').count()
-        return likes_count
+        return Mark.get_related_likes(self)
 
     def get_dislikes(self):
-        marks_count = self.marks.all().values('status').annotate(mark_count=Count('status'))
-        dislikes_count = 0
-        for mark_count in marks_count:
-            if mark_count['status'] in ('D', 'DISLIKE'):
-                dislikes_count += mark_count['mark_count']
-        # dislikes_count = self.marks.filter(status='D').count()
-        return dislikes_count
+        return Mark.get_related_dislikes(self)
 
     def __str__(self):
         return '{0}/{1}'.format(self.author.username, self.content or '<BLANK>')
