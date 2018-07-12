@@ -121,7 +121,6 @@ class Mark(models.Model):
         for mark_count in marks_count:
             if mark_count['status'] in ('L', 'LIKE'):
                 likes_count += mark_count['mark_count']
-        # likes_count = self.marks.filter(status='L').count()
         return likes_count
 
     @staticmethod
@@ -131,7 +130,6 @@ class Mark(models.Model):
         for mark_count in marks_count:
             if mark_count['status'] in ('D', 'DISLIKE'):
                 dislikes_count += mark_count['mark_count']
-        # dislikes_count = self.marks.filter(status='D').count()
         return dislikes_count
 
     def __str__(self):

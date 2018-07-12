@@ -1,4 +1,5 @@
 Django==2.0.7
 django-crispy-forms==1.7.2
+django-pagedown==1.0.5
 Pillow==5.2.0
 pytz==2018.5

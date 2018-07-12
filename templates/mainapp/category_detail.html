@@ -1,12 +1,47 @@
 {% extends 'base.html' %}
 
+{% load crispy_forms_tags %}
+
 {% block title %}
 <title>{{ category.name }}</title>
 {% endblock title %}
 
 {% block content %}
     <main role="main" class="container">
-        <h2>{{ category.name|upper }}</h2>
+        <div class="d-flex justify-content-between bd-highlight mb-3">
+          <div class="p-2 bd-highlight">
+            <h2>{{ category.name|upper }}</h2>
+          </div>
+          <div class="p-2 bd-highlight justify-content-end">
+{#            <a href="{% url 'main:article-create' %}" class="btn btn-primary">Add Article</a>#}
+              <button type="button" class="btn btn-primary" data-toggle="modal" data-target=".bd-example-modal-lg">
+                  Add Article
+              </button>
+          </div>
+        </div>
+
+        <!-- Modal -->
+        <div class="modal fade bd-example-modal-lg" tabindex="-1" role="dialog" aria-labelledby="myLargeModalLabel" aria-hidden="true">
+          <div class="modal-dialog modal-lg">
+            <div class="modal-content">
+              <div class="modal-header">
+                <h5 class="modal-title" id="exampleModalLabel">Modal title</h5>
+                <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+                  <span aria-hidden="true">&times;</span>
+                </button>
+              </div>
+              <div class="modal-body">
+                <form action="" method="POST" enctype="multipart/form-data">
+                    {% csrf_token %}
+                    {{ article_form|crispy }}
+                    <button type="button" class="btn btn-secondary" data-dismiss="modal">Close</button>
+                    <button type="submit" class="btn btn-primary">Continue</button>
+                </form>
+              </div>
+            </div>
+          </div>
+        </div>
+
         <hr>
         <br>
         <div class="row mb-2">

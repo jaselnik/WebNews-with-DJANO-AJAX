@@ -1,15 +1,23 @@
 from django.views.generic.list import ListView
 from django.views.generic.detail import DetailView
+from django.views.generic.edit import CreateView
 from django.views import View
 from django.http.response import JsonResponse
 from django.shortcuts import get_object_or_404
 from django.db.models import Count
 from django.core.exceptions import ObjectDoesNotExist
 from django.contrib.contenttypes.models import ContentType
+from django.utils.dateformat import DateFormat
+from django.utils.dateformat import TimeFormat
+from django.utils.formats import get_format
+from django.shortcuts import redirect, reverse
+
 
 from .models import Article, Category, Repost, Mark
 from .mixins import CategoryListMixin
-from .forms import CommentForm, RepostForm
+from .forms import CommentForm, RepostForm, ArticleForm
+
+from datetime import datetime
 
 
 class MainListView(ListView):
@@ -35,7 +43,24 @@ class CategoryDetailView(DetailView, CategoryListMixin):
         context = super(CategoryDetailView, self).get_context_data()
         context['category'] = self.get_object()
         context['articles'] = self.get_object().article_set.all()
+        context['article_form'] = ArticleForm()
         return context
+
+    def post(self, request, *args, **kwargs):
+        form = ArticleForm(request.POST or None, request.FILES or None)
+        if form.is_valid():
+            user = request.user
+            category = self.get_object()
+            article = form.save(user, category)
+            return redirect(article.get_absolute_url())
+        else:
+            print('_$_$_$_$_$_$_')
+        context = super(CategoryDetailView, self).get_context_data()
+        context['category'] = self.get_object()
+        context['articles'] = self.get_object().article_set.all()
+        context['article_form'] = form
+        return context
+
 
 
 class ArticleDetailView(DetailView, CategoryListMixin):
@@ -49,17 +74,14 @@ class ArticleDetailView(DetailView, CategoryListMixin):
         context['article_comments'] = self.get_object().comments.all().order_by("-timestamp")
         context['comment_form'] = CommentForm()
         context['repost_form'] = RepostForm()
-        marks_count = self.get_object().marks.all().values('status').annotate(count=Count('status'))
-        likes_count = Mark.get_related_likes(model_obj=self.get_object())
-        dislikes_count = Mark.get_related_dislikes(model_obj=self.get_object())
-        for mark_count in marks_count:
-            if mark_count['status'] in ('L', 'LIKE'):
-                likes_count += mark_count['count']
-            elif mark_count['status'] in ('D', 'DISLIKE'):
-                dislikes_count += mark_count['count']
-        context['article_likes'] = likes_count
-        context['article_dislikes'] = dislikes_count
-        context['article_reposts'] = self.get_object().reposts.all().count()  # NEED IMPROVE
+        # context['article_reposts'] = self.get_object().reposts.all().count()  # NEED IMPROVE
+        article_reposts = self.get_object().reposts.values('content').all().annotate(repost_count=Count('content_type'))
+        print(article_reposts)
+        article_repost_count = 0
+        for article_repost in article_reposts:
+            print(article_repost)
+            article_repost_count += article_repost['repost_count']
+        context['article_reposts'] = article_repost_count
         return context
 
 
@@ -86,46 +108,20 @@ class CommentSavingView(View):
         new_comment = article.comments.create(author=request.user, content=comment)
         likes_count = new_comment.get_likes()
         dislikes_count = new_comment.get_dislikes()
+        dt = datetime.now()
+        df = DateFormat(dt)
+        tf = TimeFormat(dt)
+        new_comment_timestamp = df.format(get_format('DATE_FORMAT')) + ', '\
+                                + tf.format(get_format('TIME_FORMAT'))
         data = [{
             'author': new_comment.author.get_full_name(),
             'comment': new_comment.content,
             'comment_id': new_comment.pk,
             'comment_likes': likes_count,
             'comment_dislikes': dislikes_count,
-            'timestamp': new_comment.timestamp,
+            'timestamp': new_comment_timestamp,
         }]
         return JsonResponse(data, safe=False)
-
-
-class UserMarkedArticleView(View):
-
-    model = Article
-    model_mark = Mark
-    model_obj = None
-
-    def get(self, request, *args, **kwargs):
-        author = request.user
-        mark = self.request.GET.get('mark')
-        obj_id = self.request.GET.get('article_id')
-        self.model_obj = self.model.objects.get(pk=obj_id)
-
-        mark = mark.upper()
-        if mark in ('D', 'L', 'DISLIKE', 'LIKE', ):
-            try:
-                mark_obj = self.model_obj.marks.get(author=author)
-                if (mark_obj.object_id == int(obj_id)) and (mark_obj.content_type.model_class() == self.model):
-                    print(mark_obj.delete_or_switch(mark))
-            except ObjectDoesNotExist:
-                new_mark = self.model_obj.marks.create(author=request.user, status=mark[0])
-            likes_count = self.model_mark.get_related_likes(model_obj=self.model_obj)
-            dislikes_count = self.model_mark.get_related_dislikes(model_obj=self.model_obj)
-            data = {
-                'article_id': obj_id,
-                'article_likes': likes_count,
-                'article_dislikes': dislikes_count,
-                'status': 'OK',
-            }
-            return JsonResponse(data)
 
 
 class UserRepostArticleView(View):
@@ -185,3 +181,6 @@ class UserMarkedSomethingView(View):
                 'status': 'OK',
             }
             return JsonResponse(data)
+
+
+# '%d %b, %Y'

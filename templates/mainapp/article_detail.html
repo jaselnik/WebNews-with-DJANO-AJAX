@@ -33,7 +33,7 @@
               <div class="modal-dialog" role="document">
                 <div class="modal-content">
                   <div class="modal-header">
-                    <h5 class="modal-title" id="exampleModalLabel">Modal title</h5>
+                    <h5 class="modal-title" id="exampleModalLabel">What do u think about it..?</h5>
                     <button type="button" class="close" data-dismiss="modal" aria-label="Close">
                       <span aria-hidden="true">&times;</span>
                     </button>
@@ -125,28 +125,18 @@
                 dataType: 'json',
                 success: function (data) {
                     $.each(data, function (field) {
-                        {#$('.comments').prepend('<div class="col-sm-12"><hr><small>'+data[field]['author']+#}
-                        {#'</small><p>'+data[field]['comment']+'</p><small>'+data[field]['timestamp']+'</small></div>');#}
                         $('.comments').prepend(`<div class="col-sm-12"><hr>`+
                         `<div class="d-flex justify-content-between bd-highlight mb-3">`+
-                        `<div class="p-2 bd-highlight">`+data[field]['author']+`</small><p>`+data[field]['comment']+
+                        `<div class="p-2 bd-highlight"><small>`+data[field]['author']+`</small><p>`+data[field]['comment']+
                         `</p><small>`+data[field]['timestamp']+`</small></div>`+
                         `<div class="p-2 bd-highlight justify-content-end">`+
                         `<a href="#" class="like" data-id="`+data[field]['comment_id']+`" data-type="comment">`+
-                        '<i class="far fa-thumbs-up" style="color: #00cc00"></i>'+
-                        `</a><span id="comment-liked-`+data[field]['comment_id']+`">`+data[field]['comment_likes']+
-                        `</span></div></div></div>`);
-                        {#<div class="d-flex justify-content-between bd-highlight mb-3">#}
-                        {#  <div class="p-2 bd-highlight">#}
-                        {#    <small>{{ comment.author.get_full_name }}</small>#}
-                        {#    <p>{{ comment.content }}</p>#}
-                        {#    <small>{{ comment.timestamp }}</small>#}
-                        {#  </div>#}
-                        {#  <div class="p-2 bd-highlight justify-content-end">#}
-                        {#    <a href="#" class="like" data-id="{{ comment.pk }}" data-type="comment"><i class="far fa-thumbs-up" style="color: #00cc00"></i></a><span id="comment-liked-{{ comment.pk }}">{{ comment.get_likes }}</span>#}
-                        {#    <a href="#" class="dislike" data-id="{{ comment.pk }}" data-type="comment" style="padding-left: 25px"><i class="far fa-thumbs-down" style="color: #a41515"></i></a><span id="comment-disliked-{{ comment.pk }}">{{ comment.get_likes }}</span>#}
-                        {#  </div>#}
-                      {#</div>#}
+                        `<i class="far fa-thumbs-up" style="color: #00cc00"></i>`+
+                        `</a><span id="comment-liked-`+data[field]['comment_id']+`">`+data[field]['comment_likes']+`</span>`+
+                        `<a href="#" class="dislike" data-id="`+data[field]['comment_id']+`" data-type="comment" style="padding-left: 25px">`+
+                        `<i class="far fa-thumbs-down" style="color: #a41515"></i>`+
+                        `</a><span id="comment-disliked-`+data[field]['comment_id']+`">`+data[field]['comment_dislikes']+`</span>`+
+                        `</div></div></div>`);
                         $('#id_comment').val('');
                     })
                 }
