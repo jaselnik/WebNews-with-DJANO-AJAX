@@ -74,23 +74,15 @@ class ArticleDetailView(DetailView, CategoryListMixin):
         context['article_comments'] = self.get_object().comments.all().order_by("-timestamp")
         context['comment_form'] = CommentForm()
         context['repost_form'] = RepostForm()
-        marks_count = self.get_object().marks.all().values('status').annotate(count=Count('status'))
-        likes_count = Mark.get_related_likes(model_obj=self.get_object())
-        dislikes_count = Mark.get_related_dislikes(model_obj=self.get_object())
-        for mark_count in marks_count:
-            if mark_count['status'] in ('L', 'LIKE'):
-                likes_count += mark_count['count']
-            elif mark_count['status'] in ('D', 'DISLIKE'):
-                dislikes_count += mark_count['count']
-        context['article_likes'] = likes_count
-        context['article_dislikes'] = dislikes_count
-        context['article_reposts'] = self.get_object().reposts.all().count()  # NEED IMPROVE
+        # context['article_reposts'] = self.get_object().reposts.all().count()  # NEED IMPROVE
+        article_reposts = self.get_object().reposts.values('content').all().annotate(repost_count=Count('content_type'))
+        print(article_reposts)
+        article_repost_count = 0
+        for article_repost in article_reposts:
+            print(article_repost)
+            article_repost_count += article_repost['repost_count']
+        context['article_reposts'] = article_repost_count
         return context
-
-
-class ArticleCreateView(CreateView):
-    model = Article
-    fields = ('title', 'content', 'image')
 
 
 class HotArticleImageView(View):
