@@ -132,7 +132,7 @@ python3 manage.py runserver
 
 ## Authors
 
-* **Denis Tamkovich** - *Initial work* - On a GITHUB [jaselnik](https://github.com/PurpleBooth)
+* **Denis Tamkovich** - On a GITHUB [jaselnik](https://github.com/PurpleBooth)
 
 ## My other links
 
