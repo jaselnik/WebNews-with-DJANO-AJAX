@@ -3,8 +3,6 @@ from django.contrib.auth import update_session_auth_hash
 from django.contrib.auth.models import User
 from django.contrib.auth.forms import PasswordChangeForm
 from django.views.generic import TemplateView
-<<<<<<< HEAD
-
 
 
 from .forms import RegistrationForm, EditProfileForm, EditUserProfileForm
@@ -35,10 +33,7 @@ class EditUserProfile(TemplateView):
             'form': form
         }
         return render(request, self.template_name, args)
-=======
-from .forms import RegistrationForm, EditProfileForm
-from mainapp.models import Repost
->>>>>>> 3ec144f17a8518fac5452626e5ad3279f4829cb5
+
 
 
 class RegisterView(TemplateView):
@@ -53,11 +48,8 @@ class RegisterView(TemplateView):
     def post(self, request, *args, **kwargs):
         form = RegistrationForm(request.POST)
         if form.is_valid():
-<<<<<<< HEAD
             user = form.save()
             UserProfile.objects.create(user=user)
-=======
->>>>>>> 3ec144f17a8518fac5452626e5ad3279f4829cb5
             form.save()
             return redirect('/')
         args = {'form': form}
@@ -110,10 +102,6 @@ class ProfileView(TemplateView):
         reposts = Repost.objects.filter(author=user).order_by('-timestamp')
         args = {
             'user': user,
-<<<<<<< HEAD
             'reposts': reposts,
-=======
-            'reposts': reposts
->>>>>>> 3ec144f17a8518fac5452626e5ad3279f4829cb5
         }
         return render(request, self.template_name, args)

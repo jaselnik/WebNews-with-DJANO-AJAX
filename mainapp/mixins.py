@@ -1,9 +1,6 @@
 from django.views.generic.list import MultipleObjectMixin
 
-<<<<<<< HEAD
 
-=======
->>>>>>> 3ec144f17a8518fac5452626e5ad3279f4829cb5
 from .models import Category
 
 

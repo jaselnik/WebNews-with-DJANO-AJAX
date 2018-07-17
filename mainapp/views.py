@@ -1,4 +1,3 @@
-<<<<<<< HEAD
 from django.views import View
 from django.http import Http404
 from django.db.models import Count
@@ -18,21 +17,6 @@ from .mixins import CategoryListMixin
 from .models import Article, Category, Mark, Comment
 from .forms import CommentForm, RepostForm, ArticleForm, ArticleEdit, CommentEditForm
 
-=======
-from django.views.generic.list import ListView
-from django.views.generic.detail import DetailView
-from django.views.generic.edit import CreateView
-from django.views import View
-from django.http.response import JsonResponse
-from django.shortcuts import get_object_or_404
-from django.db.models import Count
-from django.core.exceptions import ObjectDoesNotExist
-from django.contrib.contenttypes.models import ContentType
-from django.utils.dateformat import DateFormat
-from django.utils.dateformat import TimeFormat
-from django.utils.formats import get_format
-from django.shortcuts import redirect, reverse
->>>>>>> 3ec144f17a8518fac5452626e5ad3279f4829cb5
 
 
 from .models import Article, Category, Repost, Mark
@@ -84,7 +68,6 @@ class CategoryDetailView(DetailView, CategoryListMixin):
         return context
 
 
-<<<<<<< HEAD
 class ArticleEditView(TemplateView):
 
     template_name = 'mainapp/article_edit.html'
@@ -149,8 +132,6 @@ class CommentEditView(TemplateView):
         }
         return render(request, self.template_name, args)
 
-=======
->>>>>>> 3ec144f17a8518fac5452626e5ad3279f4829cb5
 
 class ArticleDetailView(DetailView, CategoryListMixin):
 
@@ -158,10 +139,7 @@ class ArticleDetailView(DetailView, CategoryListMixin):
     model = Article
 
     def get_context_data(self, *, object_list=None, **kwargs):
-<<<<<<< HEAD
         path = self.request.path.split('/')
-=======
->>>>>>> 3ec144f17a8518fac5452626e5ad3279f4829cb5
         context = super(ArticleDetailView, self).get_context_data()
         context['article'] = self.get_object()
         context['article_comments'] = self.get_object().comments.all().order_by("-timestamp")
@@ -175,11 +153,8 @@ class ArticleDetailView(DetailView, CategoryListMixin):
             print(article_repost)
             article_repost_count += article_repost['repost_count']
         context['article_reposts'] = article_repost_count
-<<<<<<< HEAD
         context['cat_slug'] = path[1]
         context['slug'] = path[2]
-=======
->>>>>>> 3ec144f17a8518fac5452626e5ad3279f4829cb5
         return context
 
 
@@ -218,10 +193,7 @@ class CommentSavingView(View):
             'comment_likes': likes_count,
             'comment_dislikes': dislikes_count,
             'timestamp': new_comment_timestamp,
-<<<<<<< HEAD
             'slug': article.slug
-=======
->>>>>>> 3ec144f17a8518fac5452626e5ad3279f4829cb5
         }]
         return JsonResponse(data, safe=False)
 
@@ -283,9 +255,3 @@ class UserMarkedSomethingView(View):
                 'status': 'OK',
             }
             return JsonResponse(data)
-<<<<<<< HEAD
-=======
-
-
-# '%d %b, %Y'
->>>>>>> 3ec144f17a8518fac5452626e5ad3279f4829cb5
