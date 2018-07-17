@@ -21,9 +21,12 @@
 
         <p><img src="{{ article.image.url }}" alt="" style="widht:100%; height:500px"></p>
         <p>{{ article.content }}</p>
+<<<<<<< HEAD
         {% if article.author == request.user %}
           <a class="btn btn-success" href="{% url "main:article-edit" cat_slug=cat_slug slug=slug %}">Edit article</a>
         {% endif %}
+=======
+>>>>>>> 3ec144f17a8518fac5452626e5ad3279f4829cb5
         <hr>
       <div class="container">
           <div class="col-sm-12">
@@ -58,6 +61,7 @@
               <hr>
               <div class="col-sm-7 col-sm-offset-2">
                   <h6>Comments:</h6>
+<<<<<<< HEAD
                   {% if request.user.is_authenticated %}
                       <form action="" method="post">
                           <input type="hidden" id="article" data-id="{{ article.pk }}">
@@ -68,6 +72,14 @@
                   {% else %}
                       <h2 class="alert alert-info">If you want to add comments, you must be registered</h2>
                   {% endif %}
+=======
+                  <form action="" method="post">
+                      <input type="hidden" id="article" data-id="{{ article.pk }}">
+                      {% csrf_token %}
+                      {{ comment_form|crispy }}
+                      <input type="submit" value="Post" id="add_comment">
+                  </form>
+>>>>>>> 3ec144f17a8518fac5452626e5ad3279f4829cb5
                   <div class="comments">
                   {% for comment in article_comments %}
                   <div class="col-sm-12">
@@ -77,10 +89,13 @@
                             <small>{{ comment.author.get_full_name }}</small>
                             <p>{{ comment.content }}</p>
                             <small>{{ comment.timestamp }}</small>
+<<<<<<< HEAD
                             <br>
                             {% if request.user == comment.author %}
                               <a class="btn btn-success btn-sm" href="{% url "main:comment-edit" id=comment.id slug=slug %}">Edit comment</a>
                             {% endif %}
+=======
+>>>>>>> 3ec144f17a8518fac5452626e5ad3279f4829cb5
                           </div>
                           <div class="p-2 bd-highlight justify-content-end">
                             <a href="#" class="like" data-id="{{ comment.pk }}" data-type="comment"><i class="far fa-thumbs-up" style="color: #00cc00"></i></a><span id="comment-liked-{{ comment.pk }}">{{ comment.get_likes }}</span>
@@ -135,12 +150,18 @@
                 data: data,
                 dataType: 'json',
                 success: function (data) {
+<<<<<<< HEAD
                     var edit_url = "{% url "main:comment-edit" id=1 slug='aaaaa' %}".replace(/1/, data[0]['comment_id']).replace(/aaaaa/, data[0]['slug']);
+=======
+>>>>>>> 3ec144f17a8518fac5452626e5ad3279f4829cb5
                     $.each(data, function (field) {
                         $('.comments').prepend(`<div class="col-sm-12"><hr>`+
                         `<div class="d-flex justify-content-between bd-highlight mb-3">`+
                         `<div class="p-2 bd-highlight"><small>`+data[field]['author']+`</small><p>`+data[field]['comment']+
+<<<<<<< HEAD
                         `</p><small>`+data[field]['timestamp']+`</small><a class="btn btn-success btn-sm" href="`+edit_url+`">Edit comment</a></div>`+
+=======
+>>>>>>> 3ec144f17a8518fac5452626e5ad3279f4829cb5
                         `</p><small>`+data[field]['timestamp']+`</small></div>`+
                         `<div class="p-2 bd-highlight justify-content-end">`+
                         `<a href="#" class="like" data-id="`+data[field]['comment_id']+`" data-type="comment">`+

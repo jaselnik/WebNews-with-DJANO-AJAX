@@ -1,15 +1,25 @@
 from django.db import models
 from django.urls import reverse
 from django.conf import settings
+<<<<<<< HEAD
 from django.db.models import Count
 from django.contrib.contenttypes.models import ContentType
 from django.contrib.contenttypes.fields import GenericForeignKey, GenericRelation
+=======
+from django.contrib.contenttypes.models import ContentType
+from django.contrib.contenttypes.fields import GenericForeignKey, GenericRelation
+from django.db.models import Count
+>>>>>>> 3ec144f17a8518fac5452626e5ad3279f4829cb5
 
 import hashlib
 import os
 
 
 class Category(models.Model):
+<<<<<<< HEAD
+=======
+
+>>>>>>> 3ec144f17a8518fac5452626e5ad3279f4829cb5
     name = models.CharField(max_length=50)
     slug = models.SlugField()
 
@@ -33,6 +43,10 @@ def get_image_filename(instance, filename):
 
 
 class Article(models.Model):
+<<<<<<< HEAD
+=======
+
+>>>>>>> 3ec144f17a8518fac5452626e5ad3279f4829cb5
     author = models.ForeignKey(
         settings.AUTH_USER_MODEL,
         on_delete=models.CASCADE,
@@ -40,7 +54,11 @@ class Article(models.Model):
     category = models.ForeignKey(Category, on_delete=models.SET_NULL, blank=True, null=True)
     title = models.CharField(max_length=100)
     slug = models.SlugField()
+<<<<<<< HEAD
     image = models.ImageField(upload_to=get_image_filename, blank=True)
+=======
+    image = models.ImageField(upload_to=get_image_filename ,blank=True)
+>>>>>>> 3ec144f17a8518fac5452626e5ad3279f4829cb5
     content = models.TextField()
 
     comments = GenericRelation('comment')
@@ -149,7 +167,11 @@ class Repost(models.Model):
     content_object = GenericForeignKey('content_type', 'object_id')
 
     def get_object_for_content_type(self):
+<<<<<<< HEAD
         print(self.content_object)  # prints 4 times WHY???
+=======
+        print(self.content_object)   # prints 4 times WHY???
+>>>>>>> 3ec144f17a8518fac5452626e5ad3279f4829cb5
         ct = self.content_type
         model = ct.model_class()
         pk = self.object_id
@@ -174,7 +196,11 @@ from django.db import models
 
 class TaggedItem(models.Model):
     tag = models.SlugField()
+<<<<<<< HEAD
 
+=======
+    
+>>>>>>> 3ec144f17a8518fac5452626e5ad3279f4829cb5
     content_type = models.ForeignKey(ContentType, on_delete=models.CASCADE)
     object_id = models.PositiveIntegerField()
     content_object = GenericForeignKey('content_type', 'object_id')
