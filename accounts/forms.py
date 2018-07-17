@@ -3,6 +3,11 @@ from django.contrib.auth.models import User
 from django.contrib.auth.forms import UserCreationForm, UserChangeForm
 
 
+
+from .models import UserProfile
+
+
+
 class RegistrationForm(UserCreationForm):
 
     email = forms.EmailField(required=True)
@@ -40,3 +45,11 @@ class EditProfileForm(UserChangeForm):
             'last_name',
             'password'
         )
+
+
+class EditUserProfileForm(forms.ModelForm):
+    class Meta:
+        model = UserProfile
+        fields = [
+            'avatar'
+        ]

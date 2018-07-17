@@ -3,8 +3,37 @@ from django.contrib.auth import update_session_auth_hash
 from django.contrib.auth.models import User
 from django.contrib.auth.forms import PasswordChangeForm
 from django.views.generic import TemplateView
-from .forms import RegistrationForm, EditProfileForm
+
+
+from .forms import RegistrationForm, EditProfileForm, EditUserProfileForm
 from mainapp.models import Repost
+from .models import UserProfile
+
+
+class EditUserProfile(TemplateView):
+
+    template_name = 'accounts/edituserprofile.html'
+
+    def get(self, request, *args, **kwargs):
+        form = EditUserProfileForm()
+
+        args = {
+            'form': form,
+        }
+        return render(request, self.template_name, args)
+
+    def post(self, request, *args, **kwargs):
+        form = EditUserProfileForm(request.POST, request.FILES)
+        if form.is_valid():
+            user = UserProfile.objects.get(user=request.user)
+            user.avatar = form.cleaned_data.get('avatar')
+            user.save()
+            return redirect('/')
+        args = {
+            'form': form
+        }
+        return render(request, self.template_name, args)
+
 
 
 class RegisterView(TemplateView):
@@ -19,6 +48,8 @@ class RegisterView(TemplateView):
     def post(self, request, *args, **kwargs):
         form = RegistrationForm(request.POST)
         if form.is_valid():
+            user = form.save()
+            UserProfile.objects.create(user=user)
             form.save()
             return redirect('/')
         args = {'form': form}
@@ -71,6 +102,6 @@ class ProfileView(TemplateView):
         reposts = Repost.objects.filter(author=user).order_by('-timestamp')
         args = {
             'user': user,
-            'reposts': reposts
+            'reposts': reposts,
         }
         return render(request, self.template_name, args)

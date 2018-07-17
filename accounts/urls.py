@@ -1,17 +1,20 @@
 from django.urls import path, re_path
 from django.contrib.auth.views import (
-    login, logout, password_reset, password_reset_done, password_reset_confirm,
-    password_reset_complete, LoginView
+    login, logout, password_reset, password_reset_done,
+    password_reset_confirm, password_reset_complete, LoginView
 )
 
 from .views import (
-    ChangePasswordView, EditProfileView, ProfileView, RegisterView
+    ChangePasswordView, EditProfileView, ProfileView,
+    RegisterView, EditUserProfile
 )
+
 
 app_name = 'accounts'
 
 urlpatterns = [
     re_path(r'^(?P<pk>\d+)/$', ProfileView.as_view(), name='view_profile_with_pk'),
+    re_path(r'^(?P<pk>\d+)/edit$', EditUserProfile.as_view(), name='EditUserProfile'),
     path('register/', RegisterView.as_view(), name='register'),
     path('login/', login, {'template_name': 'accounts/login.html'}, name='login'),
     path('logout/', logout, {'template_name': 'accounts/logout.html'}, name='logout'),

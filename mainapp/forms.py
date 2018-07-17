@@ -1,17 +1,34 @@
 from django import forms
 from django.utils.text import slugify
 
-from .models import Article
-
+from .models import Article, Comment
 from pagedown.widgets import PagedownWidget
+
 
 class CommentForm(forms.Form):
 
     comment = forms.CharField(widget=forms.Textarea)
 
 
-class RepostForm(forms.Form):
+class ArticleEdit(forms.ModelForm):
+    class Meta:
+        model = Article
+        fields = [
+            'title',
+            'content',
+            'image'
+        ]
 
+
+class CommentEditForm(forms.ModelForm):
+    class Meta:
+        model = Comment
+        fields = [
+            'content'
+        ]
+
+
+class RepostForm(forms.Form):
     repost_comment = forms.CharField(widget=forms.Textarea)
 
 

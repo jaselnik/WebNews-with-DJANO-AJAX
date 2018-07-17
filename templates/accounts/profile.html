@@ -18,7 +18,7 @@
           <div class="text-center">
 
               <!-- Placeholder image using Placeholder.com -->
-              {%  if user.userprofile.image %}
+              {%  if user.userprofile.avatar %}
               <img src="{{ user.userprofile.avatar.url }}" width="240" class="rounded">
               {% else %}
               {% if user.is_staff %}
@@ -33,7 +33,9 @@
 
               <!-- Header text (Person's name) -->
               <h2>{{ user.get_full_name }}</h2>
-
+              <a href="{% url "accounts:EditUserProfile" pk=request.user.id %}" class="btn btn-success">Edit avatar</a>
+              <br>
+              <br>
               <!-- Social buttons using anchor elements and btn-primary class to style -->
               <p>
                 <a class="btn btn-primary btn-xs" href="#" role="button">Facebook</a>

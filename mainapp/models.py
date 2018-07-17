@@ -2,6 +2,7 @@ from django.db import models
 from django.urls import reverse
 from django.conf import settings
 from django.contrib.contenttypes.models import ContentType
+from django.contrib.contenttypes.models import ContentType
 from django.contrib.contenttypes.fields import GenericForeignKey, GenericRelation
 from django.db.models import Count
 
@@ -10,7 +11,6 @@ import os
 
 
 class Category(models.Model):
-
     name = models.CharField(max_length=50)
     slug = models.SlugField()
 
@@ -34,7 +34,6 @@ def get_image_filename(instance, filename):
 
 
 class Article(models.Model):
-
     author = models.ForeignKey(
         settings.AUTH_USER_MODEL,
         on_delete=models.CASCADE,
@@ -42,7 +41,7 @@ class Article(models.Model):
     category = models.ForeignKey(Category, on_delete=models.SET_NULL, blank=True, null=True)
     title = models.CharField(max_length=100)
     slug = models.SlugField()
-    image = models.ImageField(upload_to=get_image_filename ,blank=True)
+    image = models.ImageField(upload_to=get_image_filename, blank=True)
     content = models.TextField()
 
     comments = GenericRelation('comment')
@@ -151,7 +150,6 @@ class Repost(models.Model):
     content_object = GenericForeignKey('content_type', 'object_id')
 
     def get_object_for_content_type(self):
-        print(self.content_object)   # prints 4 times WHY???
         ct = self.content_type
         model = ct.model_class()
         pk = self.object_id
@@ -176,7 +174,11 @@ from django.db import models
 
 class TaggedItem(models.Model):
     tag = models.SlugField()
+<<<<<<< HEAD
+
+=======
     
+>>>>>>> 3ec144f17a8518fac5452626e5ad3279f4829cb5
     content_type = models.ForeignKey(ContentType, on_delete=models.CASCADE)
     object_id = models.PositiveIntegerField()
     content_object = GenericForeignKey('content_type', 'object_id')
