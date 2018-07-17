@@ -1,0 +1,20 @@
+{% extends 'base.html' %}
+
+{% load crispy_forms_tags %}
+
+
+{% block content %}
+    <div class="container">
+        <div class="row">
+            <div class="col-2"></div>
+            <div class="col-8">
+                <form action="{% url 'main:article-edit' cat_slug=cat_slug slug=slug %}" method="POST" enctype="multipart/form-data">
+                    {% csrf_token %}
+                    {{ form|crispy }}
+                    <input type="submit">
+                </form>
+                <br>
+            </div>
+        </div>
+    </div>
+{% endblock content %}

@@ -1,16 +1,22 @@
-from django.views.generic.list import ListView
-from django.views.generic.detail import DetailView
-from django.views.generic.edit import CreateView
 from django.views import View
+from django.http import Http404
+from django.db.models import Count
+from django.utils.formats import get_format
+from django.shortcuts import redirect, render
+from django.views.generic import TemplateView
 from django.http.response import JsonResponse
 from django.shortcuts import get_object_or_404
-from django.db.models import Count
+from django.views.generic.list import ListView
+from django.views.generic.detail import DetailView
 from django.core.exceptions import ObjectDoesNotExist
+from django.utils.dateformat import DateFormat, TimeFormat
 from django.contrib.contenttypes.models import ContentType
-from django.utils.dateformat import DateFormat
-from django.utils.dateformat import TimeFormat
-from django.utils.formats import get_format
-from django.shortcuts import redirect, reverse
+
+
+from .mixins import CategoryListMixin
+from .models import Article, Category, Mark, Comment
+from .forms import CommentForm, RepostForm, ArticleForm, ArticleEdit, CommentEditForm
+
 
 
 from .models import Article, Category, Repost, Mark
@@ -62,6 +68,70 @@ class CategoryDetailView(DetailView, CategoryListMixin):
         return context
 
 
+class ArticleEditView(TemplateView):
+
+    template_name = 'mainapp/article_edit.html'
+
+    def get(self, request, *args, **kwargs):
+        article = Article.objects.get(slug=kwargs['slug'])
+        if request.user != article.author:
+            return Http404
+        form = ArticleEdit(instance=article)
+        path = request.path.split('/')
+        args = {
+            'form': form,
+            'cat_slug': path[1],
+            'slug': path[2],
+        }
+        return render(request, self.template_name, args)
+
+    def post(self, request, *args, **kwargs):
+        article = Article.objects.get(slug=kwargs['slug'])
+        if request.user != article.author:
+            return Http404
+        form = ArticleEdit(request.POST, request.FILES, instance=article)
+        if form.is_valid():
+            form.save()
+
+            return redirect(article.get_absolute_url())
+        args = {
+            'form': form
+        }
+        return render(request, self.template_name, args)
+
+
+class CommentEditView(TemplateView):
+
+    template_name = 'mainapp/comment_edit.html'
+
+    def get(self, request, *args, **kwargs):
+        id_comment = kwargs['id']
+        slug = kwargs['slug']
+        comment = Comment.objects.get(id=kwargs['id'])
+        if request.user != comment.author:
+            return Http404
+        form = CommentEditForm(instance=comment)
+        args = {
+            'form': form,
+            'id_comment': id_comment,
+            'slug': slug
+        }
+        return render(request, self.template_name, args)
+
+    def post(self, request, *args, **kwargs):
+        article = Article.objects.get(slug=kwargs['slug'])
+        comment = Comment.objects.get(id=kwargs['id'])
+        if request.user != comment.author:
+            return Http404
+        form = CommentEditForm(request.POST, request.FILES, instance=comment)
+        if form.is_valid():
+            form.save()
+            return redirect(article.get_absolute_url())
+        args = {
+            'form': form
+        }
+        return render(request, self.template_name, args)
+
 
 class ArticleDetailView(DetailView, CategoryListMixin):
 
@@ -69,6 +139,7 @@ class ArticleDetailView(DetailView, CategoryListMixin):
     model = Article
 
     def get_context_data(self, *, object_list=None, **kwargs):
+        path = self.request.path.split('/')
         context = super(ArticleDetailView, self).get_context_data()
         context['article'] = self.get_object()
         context['article_comments'] = self.get_object().comments.all().order_by("-timestamp")
@@ -82,6 +153,8 @@ class ArticleDetailView(DetailView, CategoryListMixin):
             print(article_repost)
             article_repost_count += article_repost['repost_count']
         context['article_reposts'] = article_repost_count
+        context['cat_slug'] = path[1]
+        context['slug'] = path[2]
         return context
 
 
@@ -120,6 +193,7 @@ class CommentSavingView(View):
             'comment_likes': likes_count,
             'comment_dislikes': dislikes_count,
             'timestamp': new_comment_timestamp,
+            'slug': article.slug
         }]
         return JsonResponse(data, safe=False)
 
@@ -181,6 +255,3 @@ class UserMarkedSomethingView(View):
                 'status': 'OK',
             }
             return JsonResponse(data)
-
-
-# '%d %b, %Y'
