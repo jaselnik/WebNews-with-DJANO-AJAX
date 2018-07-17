@@ -1,0 +1,156 @@
+{% extends 'base.html' %}
+
+{% block title %}
+<title>{{ user.get_full_name }}</title>
+{% endblock title %}
+
+{% block content %}
+ <!--Main container. Everything must be contained within a top-level container.-->
+  <div class="container-fluid">
+
+    <!--First row (only row)-->
+    <div class="row extra_margin">
+
+      <!-- First column (smaller of the two). Will appear on the left on desktop and on the top on mobile. -->
+      <div class="col-md-4 col-sm-12 col-xs-12">
+
+          <!-- Div to center the header image/name/social buttons -->
+          <div class="text-center">
+
+
+              <!-- Placeholder image using Placeholder.com -->
+              {%  if user.userprofile.avatar %}
+              <img src="{{ user.userprofile.avatar.url }}" width="240" class="rounded">
+              {% else %}
+              {% if user.is_staff %}
+              <img src="/media/avatar/staff-standart.jpg" width="240" class="rounded">
+              {% elif user.userprofille.sex == 'M' %}
+              <img src="/media/avatar/gentle-standart.jpg" width="240" class="rounded">
+              {% else %}
+              <img src="/media/avatar/lady-standart.jpg" width="240" class="rounded">
+              {% endif %}
+              {% endif %}
+{#              <img src="http://via.placeholder.com/300x250" class="rounded"/>#}
+
+              <!-- Header text (Person's name) -->
+              <h2>{{ user.get_full_name }}</h2>
+              <a href="{% url "accounts:EditUserProfile" pk=request.user.id %}" class="btn btn-success">Edit avatar</a>
+              <br>
+              <br>
+              <!-- Social buttons using anchor elements and btn-primary class to style -->
+              <p>
+                <a class="btn btn-primary btn-xs" href="#" role="button">Facebook</a>
+                <a class="btn btn-primary btn-xs" href="#" role="button">Twitter</a>
+                <a class="btn btn-primary btn-xs" href="#" role="button">Instagram</a>
+                <a class="btn btn-primary btn-xs" href="#" role="button">Website</a>
+              </p>
+
+          </div>
+
+      </div> <!-- End Col 1 -->
+
+      <!-- Second column - for small and extra-small screens, will use whatever # cols is available -->
+      <div class="col-md-7 col-sm-* col-xs-*">
+
+        <!-- "Lead" text at top of column. -->
+        <h5 class="text-center text-info">USER TAPE</h5><hr>
+
+        {% for repost in reposts %}
+        <div class="card">
+          <div class="card-header">
+            {{ repost.content }}
+          </div>
+          <div class="card-body">
+            <div class="row">
+              <div class="col-md-10">
+                <div class="card flex-md-row mb-4 box-shadow h-md-250">
+                    <div class="card-body d-flex flex-column align-items-start">
+                        <strong class="d-inline-block mb-2 text-primary">{{ repost.get_object_for_content_type.category.name }}</strong>
+                        <h3 class="mb-0">
+                          <a class="text-dark" href="{{ repost.get_object_for_content_type.get_absolute_url }}">{{ repost.get_object_for_content_type.title|truncatechars:20 }}</a>
+                        </h3>
+                        <div class="mb-1 text-muted">Nov 13</div>
+                        <p class="card-text mb-auto">{{ repost.get_object_for_content_type.content|truncatewords:15 }}</p>
+                        <a href="{{ repost.get_object_for_content_type.get_absolute_url }}">Continue reading</a>
+                    </div>
+                    <img class="card-img-right flex-auto d-none d-lg-block img-fluid img-preview image-preview"
+                         src="{{ repost.get_object_for_content_type.image.url }}" data-holder-rendered="true"
+                         alt="Responsive image">
+                </div>
+              </div>
+            </div>
+          </div>
+          <div class="card-footer text-muted">
+            <div class="d-flex justify-content-between bd-highlight mb-3">
+              <div class="p-2 bd-highlight">{{ repost.timestamp }}</div>
+              <div class="p-2 bd-highlight justify-content-end">
+                <a href="#" class="like" data-id="{{ repost.pk }}" data-type="repost"><i class="far fa-thumbs-up" style="color: #00cc00"></i></a><span id="repost-liked-{{ repost.pk }}">{{ repost.get_likes }}</span>
+                <a href="#" class="dislike" data-id="{{ repost.pk }}" data-type="repost" style="padding-left: 25px"><i class="far fa-thumbs-down" style="color: #a41515"></i></a><span id="repost-disliked-{{ repost.pk }}">{{ repost.get_dislikes }}</span>
+              </div>
+            </div>
+          </div>
+        </div>
+        <br>
+        {% endfor %}
+
+      </div> <!-- End column 2 -->
+
+    </div> <!-- End row 1 -->
+
+</div> <!-- End main container -->
+{% endblock content %}
+
+{% block jquery %}
+<script>
+    $(document).ready(function () {
+        $('.like').click(function (e) {
+            e.preventDefault();
+            var mark = 'L';
+            var obj_id = $(this).attr('data-id');
+            var model_type = $(this).attr('data-type');
+
+            data = {
+                mark: mark,
+                obj_id: obj_id,
+                model_type: model_type
+            };
+
+            $.ajax({
+                type: "GET",
+                url: "{% url 'main:user-marked-something' %}",
+                data: data,
+                dataType: "json",
+                success: function (data) {
+                    console.log(data);
+                    $('#'+data.model_type+'-liked-'+data.obj_id).html(data.obj_likes);
+                    $('#'+data.model_type+'-disliked-'+data.obj_id).html(data.obj_dislikes);
+                }
+            })
+        });
+        $('.dislike').click(function (e) {
+            e.preventDefault();
+            var mark = 'D';
+            var obj_id = $(this).attr('data-id');
+            var model_type = $(this).attr('data-type');
+
+            data = {
+                mark: mark,
+                obj_id: obj_id,
+                model_type: model_type
+            };
+
+            $.ajax({
+                type: "GET",
+                url: "{% url 'main:user-marked-something' %}",
+                data: data,
+                dataType: "json",
+                success: function (data) {
+                    console.log(data);
+                    $('#'+data.model_type+'-liked-'+data.obj_id).html(data.obj_likes);
+                    $('#'+data.model_type+'-disliked-'+data.obj_id).html(data.obj_dislikes);
+                }
+            })
+        });
+    })
+</script>
+{% endblock jquery %}

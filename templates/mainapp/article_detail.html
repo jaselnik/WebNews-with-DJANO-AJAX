@@ -1,0 +1,233 @@
+{% extends 'base.html' %}
+
+{% load crispy_forms_tags %}
+
+{% block title %}
+<title>{{ article.title }}</title>
+{% endblock title %}
+
+{% block content %}
+<main role="main" class="container">
+  <div class="row">
+    <div class="col-md-8 blog-main">
+      <h3 class="pb-3 mb-4 font-italic border-bottom">
+        View all articles about
+        <a href="{{ article.category.get_absolute_url }}">{{ article.category.name }}</a>
+      </h3>
+
+      <div class="blog-post">
+        <h2 class="blog-post-title">{{ article.title }}</h2>
+        <p class="blog-post-meta">January 1, 2014 by <a href="#">{{ article.author }}</a></p>
+
+        <p><img src="{{ article.image.url }}" alt="" style="widht:100%; height:500px"></p>
+        <p>{{ article.content }}</p>
+        {% if article.author == request.user %}
+          <a class="btn btn-success" href="{% url "main:article-edit" cat_slug=cat_slug slug=slug %}">Edit article</a>
+        {% endif %}
+        <hr>
+      <div class="container">
+          <div class="col-sm-12">
+              <a href="#" class="like" data-id="{{ article.pk }}" data-type="article"><i class="far fa-thumbs-up" style="color: #00cc00"></i></a><span id="article-liked-{{ article.pk }}">{{ article.get_likes }}</span>
+              <a href="#" class="dislike" data-id="{{ article.pk }}" data-type="article" style="padding-left: 25px"><i class="far fa-thumbs-down" style="color: #a41515"></i></a><span id="article-disliked-{{ article.pk }}">{{ article.get_dislikes }}</span>
+              <a href="#" id="repost" data-type="article" style="padding-left: 25px" data-toggle="modal" data-target="#exampleModal"><i class="fas fa-share" style="color: #6f42c1"></i></a><span id="reposted">{{ article_reposts }}</span>
+
+            <!-- Modal -->
+            <div class="modal fade" id="exampleModal" tabindex="-1" role="dialog" aria-labelledby="exampleModalLabel" aria-hidden="true">
+              <div class="modal-dialog" role="document">
+                <div class="modal-content">
+                  <div class="modal-header">
+                    <h5 class="modal-title" id="exampleModalLabel">What do u think about it..?</h5>
+                    <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+                      <span aria-hidden="true">&times;</span>
+                    </button>
+                  </div>
+                  <div class="modal-body">
+                    <div class="modal-body">
+                        <form action="POST">
+                            {% csrf_token %}
+                            {{ repost_form|crispy }}
+                            <button type="button" class="btn btn-secondary" data-dismiss="modal">Close</button>
+                            <button type="button" class="btn btn-primary" id="add_repost">Continue</button>
+                        </form>
+                    </div>
+                  </div>
+                </div>
+              </div>
+            </div>
+
+              <hr>
+              <div class="col-sm-7 col-sm-offset-2">
+                  <h6>Comments:</h6>
+                  {% if request.user.is_authenticated %}
+                      <form action="" method="post">
+                          <input type="hidden" id="article" data-id="{{ article.pk }}">
+                          {% csrf_token %}
+                          {{ comment_form|crispy }}
+                          <input type="submit" value="Post" id="add_comment">
+                      </form>
+                  {% else %}
+                      <h2 class="alert alert-info">If you want to add comments, you must be registered</h2>
+                  {% endif %}
+                  <div class="comments">
+                  {% for comment in article_comments %}
+                  <div class="col-sm-12">
+                    <hr>
+                      <div class="d-flex justify-content-between bd-highlight mb-3">
+                          <div class="p-2 bd-highlight">
+                            <small>{{ comment.author.get_full_name }}</small>
+                            <p>{{ comment.content }}</p>
+                            <small>{{ comment.timestamp }}</small>
+                            <br>
+                            {% if request.user == comment.author %}
+                              <a class="btn btn-success btn-sm" href="{% url "main:comment-edit" id=comment.id slug=slug %}">Edit comment</a>
+                            {% endif %}
+                          </div>
+                          <div class="p-2 bd-highlight justify-content-end">
+                            <a href="#" class="like" data-id="{{ comment.pk }}" data-type="comment"><i class="far fa-thumbs-up" style="color: #00cc00"></i></a><span id="comment-liked-{{ comment.pk }}">{{ comment.get_likes }}</span>
+                            <a href="#" class="dislike" data-id="{{ comment.pk }}" data-type="comment" style="padding-left: 25px"><i class="far fa-thumbs-down" style="color: #a41515"></i></a><span id="comment-disliked-{{ comment.pk }}">{{ comment.get_likes }}</span>
+                          </div>
+                      </div>
+                  </div>
+                  {% endfor %}
+                  </div>
+              </div>
+          </div>
+      </div>
+      </div>
+    </div>
+  </div>
+</main>
+{% endblock content %}
+
+{% block jquery %}
+<script>
+    $(document).ready(function () {
+        function getCookie(name) {
+            var cookieValue = null;
+            if (document.cookie && document.cookie !== '') {
+                var cookies = document.cookie.split(';');
+                for (var i = 0; i < cookies.length; i++) {
+                    var cookie = jQuery.trim(cookies[i]);
+                    // Does this cookie string begin with the name we want?
+                    if (cookie.substring(0, name.length + 1) === (name + '=')) {
+                        cookieValue = decodeURIComponent(cookie.substring(name.length + 1));
+                        break;
+                    }
+                }
+            }
+            return cookieValue;
+        }
+        var csrftoken = getCookie('csrftoken');
+        $('#add_comment').on('click', function (e) {
+            e.preventDefault();
+            var article_id = $('#article').attr('data-id');
+            var comment = $('#id_comment').val();
+
+            data = {
+                article_id: article_id,
+                comment: comment,
+                csrfmiddlewaretoken: csrftoken
+            };
+
+            $.ajax({
+                type: "POST",
+                url: "{% url 'main:add-comment' %}",
+                data: data,
+                dataType: 'json',
+                success: function (data) {
+                    var edit_url = "{% url "main:comment-edit" id=1 slug='aaaaa' %}".replace(/1/, data[0]['comment_id']).replace(/aaaaa/, data[0]['slug']);
+                    $.each(data, function (field) {
+                        $('.comments').prepend(`<div class="col-sm-12"><hr>`+
+                        `<div class="d-flex justify-content-between bd-highlight mb-3">`+
+                        `<div class="p-2 bd-highlight"><small>`+data[field]['author']+`</small><p>`+data[field]['comment']+
+                        `</p><small>`+data[field]['timestamp']+`</small><a class="btn btn-success btn-sm" href="`+edit_url+`">Edit comment</a></div>`+
+                        `</p><small>`+data[field]['timestamp']+`</small></div>`+
+                        `<div class="p-2 bd-highlight justify-content-end">`+
+                        `<a href="#" class="like" data-id="`+data[field]['comment_id']+`" data-type="comment">`+
+                        `<i class="far fa-thumbs-up" style="color: #00cc00"></i>`+
+                        `</a><span id="comment-liked-`+data[field]['comment_id']+`">`+data[field]['comment_likes']+`</span>`+
+                        `<a href="#" class="dislike" data-id="`+data[field]['comment_id']+`" data-type="comment" style="padding-left: 25px">`+
+                        `<i class="far fa-thumbs-down" style="color: #a41515"></i>`+
+                        `</a><span id="comment-disliked-`+data[field]['comment_id']+`">`+data[field]['comment_dislikes']+`</span>`+
+                        `</div></div></div>`);
+                        $('#id_comment').val('');
+                    })
+                }
+            });
+        });
+        $('#add_repost').on('click', function (e) {
+            e.preventDefault();
+            var article_id = $('#article').attr('data-id');
+            var comment = $('#id_repost_comment').val();
+
+            data = {
+                article_id: article_id,
+                comment: comment,
+                csrfmiddlewaretoken: csrftoken
+            };
+
+            $.ajax({
+                type: "POST",
+                url: "{% url 'main:user-repost-article' %}",
+                data: data,
+                dataType: "json",
+                success: function (data) {
+                    $('#reposted').html(data.article_reposts);
+                }
+            });
+        });
+    })
+</script>
+<script>
+    $(document).ready(function () {
+        $('.like').click(function (e) {
+            e.preventDefault();
+            var mark = 'L';
+            var obj_id = $(this).attr('data-id');
+            var model_type = $(this).attr('data-type');
+
+            data = {
+                mark: mark,
+                obj_id: obj_id,
+                model_type: model_type
+            };
+
+            $.ajax({
+                type: "GET",
+                url: "{% url 'main:user-marked-something' %}",
+                data: data,
+                dataType: "json",
+                success: function (data) {
+                    console.log(data);
+                    $('#'+data.model_type+'-liked-'+data.obj_id).html(data.obj_likes);
+                    $('#'+data.model_type+'-disliked-'+data.obj_id).html(data.obj_dislikes);
+                }
+            })
+        });
+        $('.dislike').click(function (e) {
+            e.preventDefault();
+            var mark = 'D';
+            var obj_id = $(this).attr('data-id');
+            var model_type = $(this).attr('data-type');
+
+            data = {
+                mark: mark,
+                obj_id: obj_id,
+                model_type: model_type
+            };
+
+            $.ajax({
+                type: "GET",
+                url: "{% url 'main:user-marked-something' %}",
+                data: data,
+                dataType: "json",
+                success: function (data) {
+                    console.log(data);
+                    $('#'+data.model_type+'-liked-'+data.obj_id).html(data.obj_likes);
+                    $('#'+data.model_type+'-disliked-'+data.obj_id).html(data.obj_dislikes);
+                }
+            })
+        });
+    })
+</script>
+{% endblock jquery %}

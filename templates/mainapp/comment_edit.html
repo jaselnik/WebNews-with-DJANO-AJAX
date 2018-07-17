@@ -1,0 +1,20 @@
+{% extends 'base.html' %}
+
+{% load crispy_forms_tags %}
+
+
+{% block content %}
+    <div class="container">
+        <div class="row">
+            <div class="col-2"></div>
+            <div class="col-8">
+                <form action="{% url "main:comment-edit" id=id_comment slug=slug %}" method="POST">
+                    {% csrf_token %}
+                    {{ form|crispy }}
+                    <input type="submit">
+                </form>
+            </div>
+        </div>
+    </div>
+{% endblock content %}
+
