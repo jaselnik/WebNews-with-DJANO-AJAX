@@ -3,14 +3,11 @@ from django.contrib.auth.models import User
 from django.contrib.auth.forms import UserCreationForm, UserChangeForm
 
 
-<<<<<<< HEAD
 
 from .models import UserProfile
 
 
 
-=======
->>>>>>> 3ec144f17a8518fac5452626e5ad3279f4829cb5
 class RegistrationForm(UserCreationForm):
 
     email = forms.EmailField(required=True)
@@ -48,8 +45,6 @@ class EditProfileForm(UserChangeForm):
             'last_name',
             'password'
         )
-<<<<<<< HEAD
-
 
 
 class EditUserProfileForm(forms.ModelForm):
@@ -58,6 +53,3 @@ class EditUserProfileForm(forms.ModelForm):
         fields = [
             'avatar'
         ]
-
-=======
->>>>>>> 3ec144f17a8518fac5452626e5ad3279f4829cb5
