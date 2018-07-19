@@ -22,7 +22,7 @@ You can:
 * Register new user using **/account/register/** uri 
 * Login User using **/account/login/** uri
 * Logout User using **/account/logout/** uri
-* View user profile using **/account/profile/<user_id>/** uri. 
+* View user profile using **/account/<user_id>/** uri. 
   * You can find user id in Database or in python3 manage.py shell
 
 _How I did it and other things + urls you can find in repository [accounts/](https://github.com/jaselnik/WebNews-with-DJANO-AJAX/tree/master/accounts)_
