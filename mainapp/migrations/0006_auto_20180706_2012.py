@@ -7,14 +7,9 @@ from django.db import migrations
 class Migration(migrations.Migration):
 
     dependencies = [
-        ('contenttypes', '0002_remove_content_type_name'),
+        ("contenttypes", "0002_remove_content_type_name"),
         migrations.swappable_dependency(settings.AUTH_USER_MODEL),
-        ('mainapp', '0005_auto_20180706_2001'),
+        ("mainapp", "0005_auto_20180706_2001"),
     ]
 
-    operations = [
-        migrations.RenameModel(
-            old_name='Comments',
-            new_name='Comment',
-        ),
-    ]
+    operations = [migrations.RenameModel(old_name="Comments", new_name="Comment")]

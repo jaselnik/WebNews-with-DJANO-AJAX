@@ -1,3 +1,4 @@
+from datetime import datetime
 from django.views import View
 from django.http import Http404
 from django.db.models import Count
@@ -12,44 +13,35 @@ from django.core.exceptions import ObjectDoesNotExist
 from django.utils.dateformat import DateFormat, TimeFormat
 from django.contrib.contenttypes.models import ContentType
 
-
 from .mixins import CategoryListMixin
-from .models import Article, Category, Mark, Comment
+from .models import Article, Category, Repost, Mark, Comment
 from .forms import CommentForm, RepostForm, ArticleForm, ArticleEdit, CommentEditForm
-
-
-
-from .models import Article, Category, Repost, Mark
-from .mixins import CategoryListMixin
-from .forms import CommentForm, RepostForm, ArticleForm
-
-from datetime import datetime
 
 
 class MainListView(ListView):
 
-    template_name = 'mainapp/home.html'
+    template_name = "mainapp/home.html"
     model = Article
 
     def get_context_data(self, *, object_list=None, **kwargs):
         context = super(MainListView, self).get_context_data()
-        context['hot_articles'] = self.model.objects.all().order_by('-id')[:4]
-        context['popular_articles'] = self.model.objects.all().order_by('-id')[4:6]
-        context['last_article_image'] = context['hot_articles'][3].image.url
-        context['categories'] = Category.objects.all()
+        context["hot_articles"] = self.model.objects.all().order_by("-id")[:4]
+        context["popular_articles"] = self.model.objects.all().order_by("-id")[4:6]
+        context["last_article_image"] = context["hot_articles"][3].image.url
+        context["categories"] = Category.objects.all()
         return context
 
 
 class CategoryDetailView(DetailView, CategoryListMixin):
 
-    template_name = 'mainapp/category_detail.html'
+    template_name = "mainapp/category_detail.html"
     model = Category
 
     def get_context_data(self, *, object_list=None, **kwargs):
         context = super(CategoryDetailView, self).get_context_data()
-        context['category'] = self.get_object()
-        context['articles'] = self.get_object().article_set.all()
-        context['article_form'] = ArticleForm()
+        context["category"] = self.get_object()
+        context["articles"] = self.get_object().article_set.all()
+        context["article_form"] = ArticleForm()
         return context
 
     def post(self, request, *args, **kwargs):
@@ -59,34 +51,28 @@ class CategoryDetailView(DetailView, CategoryListMixin):
             category = self.get_object()
             article = form.save(user, category)
             return redirect(article.get_absolute_url())
-        else:
-            print('_$_$_$_$_$_$_')
         context = super(CategoryDetailView, self).get_context_data()
-        context['category'] = self.get_object()
-        context['articles'] = self.get_object().article_set.all()
-        context['article_form'] = form
+        context["category"] = self.get_object()
+        context["articles"] = self.get_object().article_set.all()
+        context["article_form"] = form
         return context
 
 
 class ArticleEditView(TemplateView):
 
-    template_name = 'mainapp/article_edit.html'
+    template_name = "mainapp/article_edit.html"
 
     def get(self, request, *args, **kwargs):
-        article = Article.objects.get(slug=kwargs['slug'])
+        article = Article.objects.get(slug=kwargs["slug"])
         if request.user != article.author:
             return Http404
         form = ArticleEdit(instance=article)
-        path = request.path.split('/')
-        args = {
-            'form': form,
-            'cat_slug': path[1],
-            'slug': path[2],
-        }
+        path = request.path.split("/")
+        args = {"form": form, "cat_slug": path[1], "slug": path[2]}
         return render(request, self.template_name, args)
 
     def post(self, request, *args, **kwargs):
-        article = Article.objects.get(slug=kwargs['slug'])
+        article = Article.objects.get(slug=kwargs["slug"])
         if request.user != article.author:
             return Http404
         form = ArticleEdit(request.POST, request.FILES, instance=article)
@@ -94,89 +80,82 @@ class ArticleEditView(TemplateView):
             form.save()
 
             return redirect(article.get_absolute_url())
-        args = {
-            'form': form
-        }
+        args = {"form": form}
         return render(request, self.template_name, args)
 
 
 class CommentEditView(TemplateView):
 
-    template_name = 'mainapp/comment_edit.html'
+    template_name = "mainapp/comment_edit.html"
 
     def get(self, request, *args, **kwargs):
-        id_comment = kwargs['id']
-        slug = kwargs['slug']
-        comment = Comment.objects.get(id=kwargs['id'])
+        id_comment = kwargs["id"]
+        slug = kwargs["slug"]
+        comment = Comment.objects.get(id=kwargs["id"])
         if request.user != comment.author:
             return Http404
         form = CommentEditForm(instance=comment)
-        args = {
-            'form': form,
-            'id_comment': id_comment,
-            'slug': slug
-        }
+        args = {"form": form, "id_comment": id_comment, "slug": slug}
         return render(request, self.template_name, args)
 
     def post(self, request, *args, **kwargs):
-        article = Article.objects.get(slug=kwargs['slug'])
-        comment = Comment.objects.get(id=kwargs['id'])
+        article = Article.objects.get(slug=kwargs["slug"])
+        comment = Comment.objects.get(id=kwargs["id"])
         if request.user != comment.author:
             return Http404
         form = CommentEditForm(request.POST, request.FILES, instance=comment)
         if form.is_valid():
             form.save()
             return redirect(article.get_absolute_url())
-        args = {
-            'form': form
-        }
+        args = {"form": form}
         return render(request, self.template_name, args)
 
 
 class ArticleDetailView(DetailView, CategoryListMixin):
 
-    template_name = 'mainapp/article_detail.html'
+    template_name = "mainapp/article_detail.html"
     model = Article
 
     def get_context_data(self, *, object_list=None, **kwargs):
-        path = self.request.path.split('/')
+        path = self.request.path.split("/")
         context = super(ArticleDetailView, self).get_context_data()
-        context['article'] = self.get_object()
-        context['article_comments'] = self.get_object().comments.all().order_by("-timestamp")
-        context['comment_form'] = CommentForm()
-        context['repost_form'] = RepostForm()
+        context["article"] = self.get_object()
+        context["article_comments"] = (
+            self.get_object().comments.all().order_by("-timestamp")
+        )
+        context["comment_form"] = CommentForm()
+        context["repost_form"] = RepostForm()
         # context['article_reposts'] = self.get_object().reposts.all().count()  # NEED IMPROVE
-        article_reposts = self.get_object().reposts.values('content').all().annotate(repost_count=Count('content_type'))
-        print(article_reposts)
+        article_reposts = (
+            self.get_object()
+            .reposts.values("content")
+            .all()
+            .annotate(repost_count=Count("content_type"))
+        )
         article_repost_count = 0
         for article_repost in article_reposts:
-            print(article_repost)
-            article_repost_count += article_repost['repost_count']
-        context['article_reposts'] = article_repost_count
-        context['cat_slug'] = path[1]
-        context['slug'] = path[2]
+            article_repost_count += article_repost["repost_count"]
+        context["article_reposts"] = article_repost_count
+        context["cat_slug"] = path[1]
+        context["slug"] = path[2]
         return context
 
 
 class HotArticleImageView(View):
-
     def get(self, request, *args, **kwargs):
-        article_id = request.GET.get('article_id')
-        print(article_id)
+        article_id = request.GET.get("article_id")
         article = get_object_or_404(Article, id=article_id)
-        data = {
-            'article_image': article.image.url,
-        }
+        data = {"article_image": article.image.url}
         return JsonResponse(data)
 
 
 class CommentSavingView(View):
 
-    template_name = 'mainapp/article_detail.html'
+    template_name = "mainapp/article_detail.html"
 
     def post(self, request, *args, **kwargs):
-        article_id = self.request.POST.get('article_id')
-        comment = self.request.POST.get('comment')
+        article_id = self.request.POST.get("article_id")
+        comment = self.request.POST.get("comment")
         article = Article.objects.get(pk=article_id)
         new_comment = article.comments.create(author=request.user, content=comment)
         likes_count = new_comment.get_likes()
@@ -184,41 +163,39 @@ class CommentSavingView(View):
         dt = datetime.now()
         df = DateFormat(dt)
         tf = TimeFormat(dt)
-        new_comment_timestamp = df.format(get_format('DATE_FORMAT')) + ', '\
-                                + tf.format(get_format('TIME_FORMAT'))
-        data = [{
-            'author': new_comment.author.get_full_name(),
-            'comment': new_comment.content,
-            'comment_id': new_comment.pk,
-            'comment_likes': likes_count,
-            'comment_dislikes': dislikes_count,
-            'timestamp': new_comment_timestamp,
-            'slug': article.slug
-        }]
+        new_comment_timestamp = (
+            df.format(get_format("DATE_FORMAT"))
+            + ", "
+            + tf.format(get_format("TIME_FORMAT"))
+        )
+        data = [
+            {
+                "author": new_comment.author.get_full_name(),
+                "comment": new_comment.content,
+                "comment_id": new_comment.pk,
+                "comment_likes": likes_count,
+                "comment_dislikes": dislikes_count,
+                "timestamp": new_comment_timestamp,
+                "slug": article.slug,
+            }
+        ]
         return JsonResponse(data, safe=False)
 
 
 class UserRepostArticleView(View):
-
     def post(self, request, *args, **kwargs):
-        article_id = self.request.POST.get('article_id')
-        comment = self.request.POST.get('comment')
+        article_id = self.request.POST.get("article_id")
+        comment = self.request.POST.get("comment")
         if not article_id:
-            data = {
-                'status': 'FATAL'
-            }
+            data = {"status": "FATAL"}
             return JsonResponse(data)
         article = Article.objects.get(pk=article_id)
         if not article:
-            data = {
-                'status': 'FATAL'
-            }
+            data = {"status": "FATAL"}
             return JsonResponse(data)
-        new_repost = article.reposts.create(author=request.user, content=comment or '')
+        article.reposts.create(author=request.user, content=comment or "")
         article_reposts = article.reposts.all().count()
-        data = {
-            'article_reposts': article_reposts
-        }
+        data = {"article_reposts": article_reposts}
         return JsonResponse(data)
 
 
@@ -230,28 +207,32 @@ class UserMarkedSomethingView(View):
 
     def get(self, request, *args, **kwargs):
         author = request.user
-        mark = self.request.GET.get('mark')
-        obj_id = self.request.GET.get('obj_id')
-        model_type = self.request.GET.get('model_type')
+        mark = self.request.GET.get("mark")
+        obj_id = self.request.GET.get("obj_id")
+        model_type = self.request.GET.get("model_type")
         ct = ContentType.objects.get(model=model_type)
         self.model = ct.model_class()
         self.model_obj = self.model.objects.get(pk=obj_id)
 
         mark = mark.upper()
-        if mark in ('D', 'L', 'DISLIKE', 'LIKE', ):
+        if mark in ("D", "L", "DISLIKE", "LIKE"):
             try:
                 mark_obj = self.model_obj.marks.get(author=author)
-                if (mark_obj.object_id == int(obj_id)) and (mark_obj.content_type.model_class() == self.model):
-                    print(mark_obj.delete_or_switch(mark))
+                if (mark_obj.object_id == int(obj_id)) and (
+                    mark_obj.content_type.model_class() == self.model
+                ):
+                    mark_obj.delete_or_switch(mark)
             except ObjectDoesNotExist:
-                new_mark = self.model_obj.marks.create(author=request.user, status=mark[0])
+                self.model_obj.marks.create(author=request.user, status=mark[0])
             likes_count = self.model_mark.get_related_likes(model_obj=self.model_obj)
-            dislikes_count = self.model_mark.get_related_dislikes(model_obj=self.model_obj)
+            dislikes_count = self.model_mark.get_related_dislikes(
+                model_obj=self.model_obj
+            )
             data = {
-                'obj_id': obj_id,
-                'obj_likes': likes_count,
-                'obj_dislikes': dislikes_count,
-                'model_type': model_type,
-                'status': 'OK',
+                "obj_id": obj_id,
+                "obj_likes": likes_count,
+                "obj_dislikes": dislikes_count,
+                "model_type": model_type,
+                "status": "OK",
             }
             return JsonResponse(data)

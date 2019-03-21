@@ -8,13 +8,8 @@ class Migration(migrations.Migration):
 
     dependencies = [
         migrations.swappable_dependency(settings.AUTH_USER_MODEL),
-        ('contenttypes', '0002_remove_content_type_name'),
-        ('mainapp', '0004_auto_20180706_1916'),
+        ("contenttypes", "0002_remove_content_type_name"),
+        ("mainapp", "0004_auto_20180706_1916"),
     ]
 
-    operations = [
-        migrations.RenameModel(
-            old_name='Comment',
-            new_name='Comments',
-        ),
-    ]
+    operations = [migrations.RenameModel(old_name="Comment", new_name="Comments")]

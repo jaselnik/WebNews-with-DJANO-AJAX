@@ -5,15 +5,13 @@ from django.db import migrations, models
 
 class Migration(migrations.Migration):
 
-    dependencies = [
-        ('mainapp', '0012_repost_content'),
-    ]
+    dependencies = [("mainapp", "0012_repost_content")]
 
     operations = [
         migrations.AddField(
-            model_name='repost',
-            name='timestamp',
+            model_name="repost",
+            name="timestamp",
             field=models.DateTimeField(auto_now_add=True),
             preserve_default=False,
-        ),
+        )
     ]
