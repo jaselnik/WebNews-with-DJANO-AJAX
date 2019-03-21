@@ -5,14 +5,10 @@ from django.db import migrations, models
 
 class Migration(migrations.Migration):
 
-    dependencies = [
-        ('mainapp', '0003_auto_20180706_1843'),
-    ]
+    dependencies = [("mainapp", "0003_auto_20180706_1843")]
 
     operations = [
         migrations.AlterField(
-            model_name='comment',
-            name='object_id',
-            field=models.PositiveIntegerField(),
-        ),
+            model_name="comment", name="object_id", field=models.PositiveIntegerField()
+        )
     ]

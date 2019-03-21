@@ -6,46 +6,37 @@ import mainapp.models
 
 class Migration(migrations.Migration):
 
-    dependencies = [
-        ('accounts', '0001_initial'),
-    ]
+    dependencies = [("accounts", "0001_initial")]
 
     operations = [
-        migrations.RemoveField(
-            model_name='userprofile',
-            name='email',
-        ),
-        migrations.RemoveField(
-            model_name='userprofile',
-            name='first_name',
-        ),
-        migrations.RemoveField(
-            model_name='userprofile',
-            name='last_name',
-        ),
+        migrations.RemoveField(model_name="userprofile", name="email"),
+        migrations.RemoveField(model_name="userprofile", name="first_name"),
+        migrations.RemoveField(model_name="userprofile", name="last_name"),
         migrations.AddField(
-            model_name='userprofile',
-            name='description',
+            model_name="userprofile",
+            name="description",
             field=models.CharField(blank=True, max_length=50, null=True),
         ),
         migrations.AlterField(
-            model_name='userprofile',
-            name='avatar',
-            field=models.ImageField(blank=True, null=True, upload_to=mainapp.models.get_image_filename),
+            model_name="userprofile",
+            name="avatar",
+            field=models.ImageField(
+                blank=True, null=True, upload_to=mainapp.models.get_image_filename
+            ),
         ),
         migrations.AlterField(
-            model_name='userprofile',
-            name='city',
-            field=models.CharField(blank=True, default='', max_length=100, null=True),
+            model_name="userprofile",
+            name="city",
+            field=models.CharField(blank=True, default="", max_length=100, null=True),
         ),
         migrations.AlterField(
-            model_name='userprofile',
-            name='phone',
+            model_name="userprofile",
+            name="phone",
             field=models.IntegerField(blank=True, default=0, null=True),
         ),
         migrations.AlterField(
-            model_name='userprofile',
-            name='website',
-            field=models.URLField(blank=True, default='', null=True),
+            model_name="userprofile",
+            name="website",
+            field=models.URLField(blank=True, default="", null=True),
         ),
     ]

@@ -9,27 +9,46 @@ class Migration(migrations.Migration):
 
     dependencies = [
         migrations.swappable_dependency(settings.AUTH_USER_MODEL),
-        ('contenttypes', '0002_remove_content_type_name'),
-        ('mainapp', '0007_article_author'),
+        ("contenttypes", "0002_remove_content_type_name"),
+        ("mainapp", "0007_article_author"),
     ]
 
     operations = [
         migrations.CreateModel(
-            name='Mark',
+            name="Mark",
             fields=[
-                ('id', models.AutoField(auto_created=True, primary_key=True, serialize=False, verbose_name='ID')),
-                ('status', models.CharField(choices=[('L', 'LIKE'), ('D', 'DISLIKE')], max_length=7)),
-                ('object_id', models.PositiveIntegerField()),
-                ('author', models.ForeignKey(on_delete=django.db.models.deletion.CASCADE, to=settings.AUTH_USER_MODEL)),
-                ('content_type', models.ForeignKey(on_delete=django.db.models.deletion.CASCADE, to='contenttypes.ContentType')),
+                (
+                    "id",
+                    models.AutoField(
+                        auto_created=True,
+                        primary_key=True,
+                        serialize=False,
+                        verbose_name="ID",
+                    ),
+                ),
+                (
+                    "status",
+                    models.CharField(
+                        choices=[("L", "LIKE"), ("D", "DISLIKE")], max_length=7
+                    ),
+                ),
+                ("object_id", models.PositiveIntegerField()),
+                (
+                    "author",
+                    models.ForeignKey(
+                        on_delete=django.db.models.deletion.CASCADE,
+                        to=settings.AUTH_USER_MODEL,
+                    ),
+                ),
+                (
+                    "content_type",
+                    models.ForeignKey(
+                        on_delete=django.db.models.deletion.CASCADE,
+                        to="contenttypes.ContentType",
+                    ),
+                ),
             ],
         ),
-        migrations.RemoveField(
-            model_name='article',
-            name='dislikes',
-        ),
-        migrations.RemoveField(
-            model_name='article',
-            name='likes',
-        ),
+        migrations.RemoveField(model_name="article", name="dislikes"),
+        migrations.RemoveField(model_name="article", name="likes"),
     ]

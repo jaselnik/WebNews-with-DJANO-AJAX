@@ -5,14 +5,10 @@ from django.db import migrations, models
 
 class Migration(migrations.Migration):
 
-    dependencies = [
-        ('mainapp', '0011_remove_repost_content'),
-    ]
+    dependencies = [("mainapp", "0011_remove_repost_content")]
 
     operations = [
         migrations.AddField(
-            model_name='repost',
-            name='content',
-            field=models.TextField(blank=True),
-        ),
+            model_name="repost", name="content", field=models.TextField(blank=True)
+        )
     ]

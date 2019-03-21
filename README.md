@@ -17,33 +17,33 @@ install the libraries in *requirements.txt* using pip3.
 
 #### User
 
-You can: 
+You can:
 
-* Register new user using **/account/register/** uri 
+* Register new user using **/account/register/** uri
 * Login User using **/account/login/** uri
 * Logout User using **/account/logout/** uri
-* View user profile using **/account/<user_id>/** uri. 
+* View user profile using **/account/<user_id>/** uri.
   * You can find user id in Database or in python3 manage.py shell
 
 _How I did it and other things + urls you can find in repository [accounts/](https://github.com/jaselnik/WebNews-with-DJANO-AJAX/tree/master/accounts)_
 
 #### Category
 
-You can: 
+You can:
 
-* Create a category in django admin panel using **/admin/** uri 
-* View category detail with articles related to this category using **/<category_slug>/** uri. 
+* Create a category in django admin panel using **/admin/** uri
+* View category detail with articles related to this category using **/<category_slug>/** uri.
   * You can find category slug in django Database or using python3 manage.py shell. Also you can see the list of the all category with their links on the top of home page with **/** uri
 
 _How I did it and other things + urls you can find in repository [mainapp/](https://github.com/jaselnik/WebNews-with-DJANO-AJAX/tree/master/mainapp)_
 
 #### Article
 
-You can: 
+You can:
 
 * Create an article using **/<category_slug>/** uri.
 * Create an article in django admin panel using **/admin/** uri
-* View the article detail using **/<category_slug>/<artilce_slug>/** uri. 
+* View the article detail using **/<category_slug>/<artilce_slug>/** uri.
   * (you can find the article slug in th Database or using python3 manage.py shell. Also you can see the list of the all articles related to category with their links content block on category-detail page **/<category_slug>/** uri)
 * Like or Dislike the article using **/<category_slug>/<artilce_slug>/** uri below the article content with Ajax JavaScrpt on FrontEnd.
 * Comment the article using **/<category_slug>/<artilce_slug>/** uri below the article content with Ajax JavaScrpt on FrontEnd.
@@ -108,7 +108,7 @@ git pull origin master
 git pull origin develop
 ```
 
-Create virtual environment using those command and actiavate it or just activate my using the 2nd command 
+Create virtual environment using those command and actiavate it or just activate my using the 2nd command
 
 ```commandline
 virtualenv venv
