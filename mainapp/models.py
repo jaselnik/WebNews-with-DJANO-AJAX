@@ -1,12 +1,12 @@
 import hashlib
 import os
 
-from django.db import models
-from django.urls import reverse
 from django.conf import settings
-from django.contrib.contenttypes.models import ContentType
 from django.contrib.contenttypes.fields import GenericForeignKey, GenericRelation
+from django.contrib.contenttypes.models import ContentType
+from django.db import models
 from django.db.models import Count
+from django.urls import reverse
 
 
 class Category(models.Model):

@@ -1,8 +1,8 @@
 from django import forms
 from django.utils.text import slugify
+from pagedown.widgets import PagedownWidget
 
 from .models import Article, Comment
-from pagedown.widgets import PagedownWidget
 
 
 class CommentForm(forms.Form):

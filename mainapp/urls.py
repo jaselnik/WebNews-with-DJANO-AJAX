@@ -1,17 +1,16 @@
 from django.urls import path, re_path
 
 from .views import (
-    MainListView,
-    CategoryDetailView,
     ArticleDetailView,
-    HotArticleImageView,
-    CommentSavingView,
-    UserRepostArticleView,
-    UserMarkedSomethingView,
     ArticleEditView,
+    CategoryDetailView,
     CommentEditView,
+    CommentSavingView,
+    HotArticleImageView,
+    MainListView,
+    UserMarkedSomethingView,
+    UserRepostArticleView,
 )
-
 
 app_name = "main"
 

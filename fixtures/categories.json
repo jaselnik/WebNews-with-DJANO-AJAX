@@ -1,0 +1,90 @@
+[
+  {
+    "model": "mainapp.category",
+    "pk": 1,
+    "fields": {
+      "name": "Sport",
+      "slug": "sport"
+    }
+  },
+  {
+    "model": "mainapp.category",
+    "pk": 2,
+    "fields": {
+      "name": "Policy",
+      "slug": "policy"
+    }
+  },
+  {
+    "model": "mainapp.category",
+    "pk": 3,
+    "fields": {
+      "name": "Travel",
+      "slug": "travel"
+    }
+  },
+  {
+    "model": "mainapp.category",
+    "pk": 4,
+    "fields": {
+      "name": "Culture",
+      "slug": "culture"
+    }
+  },
+  {
+    "model": "mainapp.category",
+    "pk": 5,
+    "fields": {
+      "name": "World",
+      "slug": "world"
+    }
+  },
+  {
+    "model": "mainapp.category",
+    "pk": 6,
+    "fields": {
+      "name": "Shop",
+      "slug": "shop"
+    }
+  },
+  {
+    "model": "mainapp.category",
+    "pk": 7,
+    "fields": {
+      "name": "Weather",
+      "slug": "weather"
+    }
+  },
+  {
+    "model": "mainapp.category",
+    "pk": 8,
+    "fields": {
+      "name": "Capital",
+      "slug": "capital"
+    }
+  },
+  {
+    "model": "mainapp.category",
+    "pk": 9,
+    "fields": {
+      "name": "Arts",
+      "slug": "arts"
+    }
+  },
+  {
+    "model": "mainapp.category",
+    "pk": 10,
+    "fields": {
+      "name": "Music",
+      "slug": "music"
+    }
+  },
+  {
+    "model": "mainapp.category",
+    "pk": 11,
+    "fields": {
+      "name": "Future",
+      "slug": "future"
+    }
+  }
+]

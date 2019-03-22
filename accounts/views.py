@@ -1,16 +1,17 @@
-from django.shortcuts import render, redirect
 from django.contrib.auth import update_session_auth_hash
-from django.contrib.auth.models import User
 from django.contrib.auth.forms import PasswordChangeForm
+from django.contrib.auth.mixins import LoginRequiredMixin
+from django.contrib.auth.models import User
+from django.shortcuts import redirect, render
 from django.views.generic import TemplateView
 
-
-from .forms import RegistrationForm, EditProfileForm, EditUserProfileForm
 from mainapp.models import Repost
+
+from .forms import EditProfileForm, EditUserProfileForm, RegistrationForm
 from .models import UserProfile
 
 
-class EditUserProfile(TemplateView):
+class EditUserProfile(LoginRequiredMixin, TemplateView):
 
     template_name = "accounts/edituserprofile.html"
 
@@ -51,7 +52,7 @@ class RegisterView(TemplateView):
         return render(request, self.template_name, args)
 
 
-class EditProfileView(TemplateView):
+class EditProfileView(LoginRequiredMixin, TemplateView):
 
     template_name = "accounts/edit_profile.html"
 
