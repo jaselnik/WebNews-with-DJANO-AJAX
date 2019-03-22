@@ -1,0 +1,9 @@
+.git
+.dockerignore
+.gitignore
+LICENSE
+README.md
+Changelog.md
+docker-compose.yml
+!media/avatar/*
+media/*

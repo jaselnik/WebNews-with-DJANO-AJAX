@@ -14,9 +14,13 @@
           </div>
           <div class="p-2 bd-highlight justify-content-end">
 {#            <a href="{% url 'main:article-create' %}" class="btn btn-primary">Add Article</a>#}
-              <button type="button" class="btn btn-primary" data-toggle="modal" data-target=".bd-example-modal-lg">
-                  Add Article
-              </button>
+              {% if request.user.is_authenticated %}
+                  <button type="button" class="btn btn-primary" data-toggle="modal" data-target=".bd-example-modal-lg">
+                      Add Article
+                  </button>
+              {% else %}
+                  <a class="btn btn-sm btn-outline-secondary" href="{% url 'accounts:login' %}">Sign in</a> to add article
+              {% endif %}
           </div>
         </div>
 

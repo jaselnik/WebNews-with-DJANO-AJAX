@@ -1,21 +1,24 @@
 from datetime import datetime
-from django.views import View
-from django.http import Http404
-from django.db.models import Count
-from django.utils.formats import get_format
-from django.shortcuts import redirect, render
-from django.views.generic import TemplateView
-from django.http.response import JsonResponse
-from django.shortcuts import get_object_or_404
-from django.views.generic.list import ListView
-from django.views.generic.detail import DetailView
-from django.core.exceptions import ObjectDoesNotExist
-from django.utils.dateformat import DateFormat, TimeFormat
-from django.contrib.contenttypes.models import ContentType
 
+from django.contrib.auth.decorators import login_required
+from django.contrib.auth.mixins import LoginRequiredMixin
+from django.contrib.contenttypes.models import ContentType
+from django.core.exceptions import ObjectDoesNotExist
+from django.db.models import Count
+from django.http import Http404
+from django.http.response import JsonResponse
+from django.shortcuts import get_object_or_404, redirect, render
+from django.utils.dateformat import DateFormat, TimeFormat
+from django.utils.decorators import method_decorator
+from django.utils.formats import get_format
+from django.views import View
+from django.views.generic import TemplateView
+from django.views.generic.detail import DetailView
+from django.views.generic.list import ListView
+
+from .forms import ArticleEdit, ArticleForm, CommentEditForm, CommentForm, RepostForm
 from .mixins import CategoryListMixin
-from .models import Article, Category, Repost, Mark, Comment
-from .forms import CommentForm, RepostForm, ArticleForm, ArticleEdit, CommentEditForm
+from .models import Article, Category, Comment, Mark, Repost
 
 
 class MainListView(ListView):
@@ -27,7 +30,10 @@ class MainListView(ListView):
         context = super(MainListView, self).get_context_data()
         context["hot_articles"] = self.model.objects.all().order_by("-id")[:4]
         context["popular_articles"] = self.model.objects.all().order_by("-id")[4:6]
-        context["last_article_image"] = context["hot_articles"][3].image.url
+        context["articles_count_enough"] = self.model.objects.all().count() > 3
+        print(context["articles_count_enough"])
+        if context["articles_count_enough"]:
+            context["last_article_image"] = context["hot_articles"][3].image.url
         context["categories"] = Category.objects.all()
         return context
 
@@ -44,6 +50,7 @@ class CategoryDetailView(DetailView, CategoryListMixin):
         context["article_form"] = ArticleForm()
         return context
 
+    @method_decorator(login_required)
     def post(self, request, *args, **kwargs):
         form = ArticleForm(request.POST or None, request.FILES or None)
         if form.is_valid():
@@ -58,7 +65,7 @@ class CategoryDetailView(DetailView, CategoryListMixin):
         return context
 
 
-class ArticleEditView(TemplateView):
+class ArticleEditView(LoginRequiredMixin, TemplateView):
 
     template_name = "mainapp/article_edit.html"
 
@@ -84,7 +91,7 @@ class ArticleEditView(TemplateView):
         return render(request, self.template_name, args)
 
 
-class CommentEditView(TemplateView):
+class CommentEditView(LoginRequiredMixin, TemplateView):
 
     template_name = "mainapp/comment_edit.html"
 
@@ -149,7 +156,7 @@ class HotArticleImageView(View):
         return JsonResponse(data)
 
 
-class CommentSavingView(View):
+class CommentSavingView(LoginRequiredMixin, View):
 
     template_name = "mainapp/article_detail.html"
 
@@ -182,7 +189,7 @@ class CommentSavingView(View):
         return JsonResponse(data, safe=False)
 
 
-class UserRepostArticleView(View):
+class UserRepostArticleView(LoginRequiredMixin, View):
     def post(self, request, *args, **kwargs):
         article_id = self.request.POST.get("article_id")
         comment = self.request.POST.get("comment")

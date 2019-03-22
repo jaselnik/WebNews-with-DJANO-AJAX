@@ -1,22 +1,21 @@
-from django.urls import path, re_path
 from django.contrib.auth.views import (
+    LoginView,
     login,
     logout,
     password_reset,
-    password_reset_done,
-    password_reset_confirm,
     password_reset_complete,
-    LoginView,
+    password_reset_confirm,
+    password_reset_done,
 )
+from django.urls import path, re_path
 
 from .views import (
     ChangePasswordView,
     EditProfileView,
+    EditUserProfile,
     ProfileView,
     RegisterView,
-    EditUserProfile,
 )
-
 
 app_name = "accounts"
 

@@ -1,6 +1,5 @@
 from django.views.generic.list import MultipleObjectMixin
 
-
 from .models import Category
 
 
