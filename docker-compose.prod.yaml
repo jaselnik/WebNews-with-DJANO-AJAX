@@ -6,8 +6,6 @@ services:
       restart: always
       build:
         context: .
-        args:
-          requirements: requirements/development.txt
       command: >
         bash -c "python3 manage.py migrate
         && python3 manage.py loaddata fixtures/categories.json
@@ -19,7 +17,7 @@ services:
       volumes:
        - .:/code
       environment:
-       - DJANGO_SETTINGS_MODULE=ajax_web_news.settings.dev
+       - DJANGO_SETTINGS_MODULE=ajax_web_news.settings.prod
       networks:
        - main
 

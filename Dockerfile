@@ -1,6 +1,9 @@
 FROM python:3
+
+ARG requirements=requirements/production.txt
+
 RUN mkdir src/
-COPY requirements.txt src/
+COPY requirements/ src/
 WORKDIR /src/
-RUN pip install -r requirements.txt
 ADD . /src/
+RUN pip install -r $requirements
