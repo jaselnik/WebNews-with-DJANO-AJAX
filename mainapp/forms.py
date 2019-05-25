@@ -1,6 +1,4 @@
 from django import forms
-from django.utils.text import slugify
-from pagedown.widgets import PagedownWidget
 
 from .models import Article, Comment
 
@@ -40,7 +38,6 @@ class ArticleForm(forms.ModelForm):
     def save(self, user, category):
         article = super(ArticleForm, self).save(commit=False)
         article.author = user
-        article.slug = slugify(article.title)
         article.category = category
         article.save()
 

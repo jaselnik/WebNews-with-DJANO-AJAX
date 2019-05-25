@@ -8,6 +8,8 @@ from django.db import models
 from django.db.models import Count
 from django.urls import reverse
 
+from .shortcuts import unique_slugify
+
 
 class Category(models.Model):
     name = models.CharField(max_length=50)
@@ -57,6 +59,11 @@ class Article(models.Model):
 
     def get_dislikes(self):
         return Mark.get_related_dislikes(self)
+
+    def save(self, **kwargs):
+        slug_str = "%s %s" % (self.title, str(self.pk))
+        unique_slugify(self, slug_str)
+        super(Article, self).save(**kwargs)
 
     def __str__(self):
         return "{0}/{1}".format(self.category.name or "uncategory", self.title)
@@ -154,31 +161,3 @@ class Repost(models.Model):
 
     def __str__(self):
         return "{0}/{1}".format(self.author.username, self.content or "<BLANK>")
-
-
-"""
-
-from django.contrib.contenttypes.fields import GenericForeignKey, GenericRelation
-from django.contrib.contenttypes.models import ContentType
-from django.db import models
-
-class TaggedItem(models.Model):
-    tag = models.SlugField()
-<<<<<<< HEAD
-
-=======
-
->>>>>>> 3ec144f17a8518fac5452626e5ad3279f4829cb5
-    content_type = models.ForeignKey(ContentType, on_delete=models.CASCADE)
-    object_id = models.PositiveIntegerField()
-    content_object = GenericForeignKey('content_type', 'object_id')
-
-    def __str__(self):
-        return self.tag
-
-
-class Bookmark(models.Model):
-    url = models.URLField()
-    tags = GenericRelation(TaggedItem)
-
-"""
