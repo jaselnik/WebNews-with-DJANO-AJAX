@@ -22,7 +22,7 @@ $ docker-compose -f docker-compose.prod.yaml up --build
 
 ## My other links
 
-* [LinkedIn](https://www.linkedin.com/in/jaselnik/)
+* [LinkedIn](https://www.linkedin.com/in/tamkovich/)
 * [Facebook](https://www.facebook.com/tamkovichdenis)
 * [VK](https://vk.com/tmkkkv)
 * [Telegram](https://t.me/tmkkkv)
