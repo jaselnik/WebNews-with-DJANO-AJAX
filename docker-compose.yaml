@@ -20,15 +20,13 @@ services:
        - .:/code
       environment:
        - DJANGO_SETTINGS_MODULE=ajax_web_news.settings.dev
-      networks:
-       - main
 
     db:
-      image: postgres
+      image: 'postgres:latest'
+      expose:
+        - "5432"
+      environment:
+        POSTGRES_PASSWORD: password
+        POSTGRES_DB: postgres
       volumes:
        - ./.postgres-data:/var/lib/postgresql/data
-      networks:
-        - main
-
-networks:
-  main:
