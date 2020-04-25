@@ -21,5 +21,3 @@ DATABASES = {
         "PORT": "5432",
     }
 }
-
-STATICFILES_DIRS = (os.path.join(BASE_DIR, "static_in_dev"),)

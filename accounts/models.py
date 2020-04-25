@@ -1,7 +1,7 @@
 from django.conf import settings
 from django.db import models
 
-from mainapp.models import get_image_filename
+from backend.models import get_image_filename
 
 
 class UserProfile(models.Model):

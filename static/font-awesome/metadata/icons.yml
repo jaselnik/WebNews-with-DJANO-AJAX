@@ -9282,7 +9282,7 @@ rss:
   label: rss
   search:
     terms:
-      - blog
+      - custom
   styles:
     - solid
   unicode: f09e
@@ -9293,7 +9293,7 @@ rss-square:
   label: RSS Square
   search:
     terms:
-      - blog
+      - custom
       - feed
   styles:
     - solid

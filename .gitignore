@@ -107,3 +107,6 @@ venv.bak/
 
 !media/avatar/*
 media/*
+
+#static
+static_in_dev/

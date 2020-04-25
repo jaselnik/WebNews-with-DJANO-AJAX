@@ -1,0 +1,166 @@
+import hashlib
+import os
+
+from django.conf import settings
+from django.contrib.contenttypes.fields import GenericForeignKey, GenericRelation
+from django.contrib.contenttypes.models import ContentType
+from django.db import models
+from django.db.models import Count
+from django.urls import reverse
+
+from .shortcuts import unique_slugify
+
+
+class Category(models.Model):
+    name = models.CharField(max_length=50)
+    slug = models.SlugField()
+
+    class Meta:
+        verbose_name = "Category"
+        verbose_name_plural = "Categories"
+
+    def get_absolute_url(self):
+        return reverse("main:category-detail", kwargs={"slug": self.slug})
+
+    def __str__(self):
+        return self.name
+
+
+def get_image_filename(instance, filename):
+    filename, file_extension = os.path.splitext(filename)
+    m = hashlib.md5()
+    m.update(filename.encode("UTF-8"))
+    res = m.hexdigest()
+    return "{}/{}/{}/{}".format(res[:2], res[2:4], res[4:6], res[6:]) + file_extension
+
+
+class Article(models.Model):
+    author = models.ForeignKey(settings.AUTH_USER_MODEL, on_delete=models.CASCADE)
+    category = models.ForeignKey(
+        Category, on_delete=models.SET_NULL, blank=True, null=True
+    )
+    title = models.CharField(max_length=100)
+    slug = models.SlugField()
+    image = models.ImageField(upload_to=get_image_filename, blank=True)
+    content = models.TextField()
+
+    comments = GenericRelation("comment")
+    marks = GenericRelation("mark")
+    reposts = GenericRelation("repost")
+
+    def get_absolute_url(self):
+        return reverse(
+            "main:article-detail",
+            kwargs={"cat_slug": self.category.slug, "slug": self.slug},
+        )
+
+    def get_likes(self):
+        return Mark.get_related_likes(self)
+
+    def get_dislikes(self):
+        return Mark.get_related_dislikes(self)
+
+    def save(self, **kwargs):
+        slug_str = "%s %s" % (self.title, str(self.pk))
+        unique_slugify(self, slug_str)
+        super(Article, self).save(**kwargs)
+
+    def __str__(self):
+        return "{0}/{1}".format(self.category.name or "uncategory", self.title)
+
+
+class Comment(models.Model):
+    author = models.ForeignKey(settings.AUTH_USER_MODEL, on_delete=models.CASCADE)
+    content = models.TextField()
+    timestamp = models.DateTimeField(auto_now_add=True, auto_now=False)
+
+    marks = GenericRelation("mark")
+
+    content_type = models.ForeignKey(ContentType, on_delete=models.CASCADE)
+    object_id = models.PositiveIntegerField()
+    content_object = GenericForeignKey("content_type", "object_id")
+
+    def get_likes(self):
+        return Mark.get_related_likes(self)
+
+    def get_dislikes(self):
+        return Mark.get_related_dislikes(self)
+
+    def __str__(self):
+        return "{0}/{1}".format(self.author.username, self.content[:10])
+
+
+class Mark(models.Model):
+    author = models.ForeignKey(settings.AUTH_USER_MODEL, on_delete=models.CASCADE)
+    MARK_CHOICES = (("L", "LIKE"), ("D", "DISLIKE"))
+    status = models.CharField(max_length=7, choices=MARK_CHOICES)
+
+    content_type = models.ForeignKey(ContentType, on_delete=models.CASCADE)
+    object_id = models.PositiveIntegerField()
+    content_object = GenericForeignKey("content_type", "object_id")
+
+    def delete_or_switch(self, status):
+        status = status[0]
+        if status == self.status:
+            self.delete()
+            return "DELETED"
+        else:
+            self.status = status
+            self.save()
+            return "SWITCHED"
+
+    @staticmethod
+    def get_related_likes(model_obj):
+        return Mark._get_related_marks(
+            model_obj=model_obj,
+            statuses=("L", "LIKE"),
+        )
+
+    @staticmethod
+    def get_related_dislikes(model_obj):
+        return Mark._get_related_marks(
+            model_obj=model_obj,
+            statuses=("D", "DISLIKE"),
+        )
+
+    @staticmethod
+    def _get_related_marks(model_obj, statuses):
+        marks = (
+            model_obj.marks.all().values("status").annotate(mark_count=Count("status"))
+        )
+        marks_count = 0
+        for mark in marks:
+            if mark["status"] in statuses:
+                marks_count += mark["mark_count"]
+        return marks_count
+
+    def __str__(self):
+        return "{0}/{1}".format(self.status, self.author.username)
+
+
+class Repost(models.Model):
+    author = models.ForeignKey(settings.AUTH_USER_MODEL, on_delete=models.CASCADE)
+    content = models.TextField(blank=True)
+    timestamp = models.DateTimeField(auto_now_add=True, auto_now=False)
+
+    marks = GenericRelation("mark")
+
+    content_type = models.ForeignKey(ContentType, on_delete=models.CASCADE)
+    object_id = models.PositiveIntegerField()
+    content_object = GenericForeignKey("content_type", "object_id")
+
+    def get_object_for_content_type(self):
+        ct = self.content_type
+        model = ct.model_class()
+        pk = self.object_id
+        object = model.objects.get(pk=pk)
+        return object
+
+    def get_likes(self):
+        return Mark.get_related_likes(self)
+
+    def get_dislikes(self):
+        return Mark.get_related_dislikes(self)
+
+    def __str__(self):
+        return "{0}/{1}".format(self.author.username, self.content or "<BLANK>")

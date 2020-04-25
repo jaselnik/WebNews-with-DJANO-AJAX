@@ -5,7 +5,7 @@ from django.contrib.auth.models import User
 from django.shortcuts import redirect, render
 from django.views.generic import TemplateView
 
-from mainapp.models import Repost
+from backend.models import Repost
 
 from .forms import EditProfileForm, EditUserProfileForm, RegistrationForm
 from .models import UserProfile
