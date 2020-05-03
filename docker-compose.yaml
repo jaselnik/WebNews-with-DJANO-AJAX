@@ -17,12 +17,19 @@ services:
        - db
       volumes:
        - .:/code
+       - media:/src/media
       environment:
        - DJANGO_SETTINGS_MODULE=ajax_web_news.settings.dev
 
     db:
       image: 'postgres:latest'
+      volumes:
+      - postgres_data:/var/lib/postgresql/data/
       environment:
       - POSTGRES_DB=postgres
       - POSTGRES_USER=postgres
       - POSTGRES_PASSWORD=password
+
+volumes:
+  postgres_data:
+  media: {}

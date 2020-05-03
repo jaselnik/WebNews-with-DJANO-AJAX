@@ -13,13 +13,12 @@
             <h2>{{ category.name|upper }}</h2>
           </div>
           <div class="p-2 bd-highlight justify-content-end">
-{#            <a href="{% url 'main:article-create' %}" class="btn btn-primary">Add Article</a>#}
               {% if request.user.is_authenticated %}
                   <button type="button" class="btn btn-primary" data-toggle="modal" data-target=".bd-example-modal-lg">
-                      Add Article
+                      Добавить статью
                   </button>
               {% else %}
-                  <a class="btn btn-sm btn-outline-secondary" href="{% url 'accounts:login' %}">Sign in</a> to add article
+                  <a class="btn btn-sm btn-outline-secondary" href="{% url 'accounts:login' %}">Войдите</a>, чтобы добавить статью
               {% endif %}
           </div>
         </div>
@@ -29,7 +28,7 @@
           <div class="modal-dialog modal-lg">
             <div class="modal-content">
               <div class="modal-header">
-                <h5 class="modal-title" id="exampleModalLabel">Modal title</h5>
+                <h5 class="modal-title" id="exampleModalLabel">Добавление статьи</h5>
                 <button type="button" class="close" data-dismiss="modal" aria-label="Close">
                   <span aria-hidden="true">&times;</span>
                 </button>
@@ -38,8 +37,8 @@
                 <form action="" method="POST" enctype="multipart/form-data">
                     {% csrf_token %}
                     {{ article_form|crispy }}
-                    <button type="button" class="btn btn-secondary" data-dismiss="modal">Close</button>
-                    <button type="submit" class="btn btn-primary">Continue</button>
+                    <button type="button" class="btn btn-secondary" data-dismiss="modal">Закрыть</button>
+                    <button type="submit" class="btn btn-primary">Продолжить</button>
                 </form>
               </div>
             </div>
@@ -59,7 +58,7 @@
               </h3>
               <div class="mb-1 text-muted">Nov 13</div>
               <p class="card-text mb-auto">{{ article.content|truncatewords:15 }}</p>
-              <a href="{{ article.get_absolute_url }}">Continue reading</a>
+              <a href="{{ article.get_absolute_url }}">Читать подробнее</a>
             </div>
             <img class="card-img-right flex-auto d-none d-lg-block img-fluid img-preview image-preview"
                  src="{{ article.image.url }}" data-holder-rendered="true"

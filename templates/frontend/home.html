@@ -4,7 +4,7 @@
   <div class="jumbotron p-3 p-md-5 text-white rounded bg-dark">
     <div class="row">
     <div class="col-md-6 px-0">
-      <h1 class="display-4 font-italic">HOT AJAX NEWS</h1>
+      <h1 class="display-4 font-italic">Новые новости</h1>
       <ul>
           {% for article in hot_articles %}
           <li>
@@ -21,7 +21,6 @@
         <p id="article-image"><img src="{{ last_article_image }}" class="hot-image" alt=""></p>
     </div>
     {% endif %}
-    <p class="lead mb-0"><a href="#" class="text-white font-weight-bold">Continue reading...</a></p>
     </div>
   </div>
 
@@ -36,7 +35,7 @@
           </h3>
           <div class="mb-1 text-muted">Nov 13</div>
           <p class="card-text mb-auto">{{ article.content|truncatewords:15 }}</p>
-          <a href="{{ article.get_absolute_url }}">Continue reading</a>
+          <a href="{{ article.get_absolute_url }}">Продолжить чтение</a>
         </div>
             <img class="card-img-right flex-auto d-none d-lg-block image-preview"
              src="{{ article.image.url }}" data-holder-rendered="true">
@@ -65,7 +64,7 @@
               dataType: 'json',
               success: function (data) {
                   console.log(data);
-                  $('#article-image').html('<img class="hot-image" src="http://127.0.0.1:8000'+data.article_image+'">');
+                  $('#article-image').html('<img class="hot-image" src="'+data.image_url+'">');
               }
           })
       })

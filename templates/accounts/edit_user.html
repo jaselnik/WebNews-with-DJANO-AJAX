@@ -1,0 +1,28 @@
+{% extends 'base.html' %}
+
+{% block head %}
+
+<title>Обновить профиль</title>
+{% endblock %}
+
+{% block content %}
+<div class="container">
+    <form method="post">
+        {% csrf_token %}
+        {% for field in form.visible_fields %}
+            {{ field.errors }}
+            {% if field.label == "Пароль" %}
+                <p>{{ field.label_tag }} Вы не можете посмотреть пароль, так как он захэширован.
+                    Изменить пароль вы можете по ссылке <a href="{% url "accounts:change_password" %}">здесь</a>
+                </p>
+            {% else %}
+                <p>{{ field.label_tag }} {{ field }}</p>
+            {% endif %}
+        {% endfor %}
+        <button class="btn btn-success" type="submit">Сохранить</button>
+        <br>
+    </form>
+    <hr>
+    Редактировать фотографию <a href="{% url "accounts:edit_profile" %}">здесь</a>
+</div>
+{% endblock content %}

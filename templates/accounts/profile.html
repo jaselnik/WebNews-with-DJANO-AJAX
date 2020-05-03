@@ -29,20 +29,13 @@
               <img src="/media/avatar/lady-standart.jpg" width="240" class="rounded">
               {% endif %}
               {% endif %}
-{#              <img src="http://via.placeholder.com/300x250" class="rounded"/>#}
 
-              <!-- Header text (Person's name) -->
               <h2>{{ user.get_full_name }}</h2>
-              <a href="{% url "accounts:EditUserProfile" pk=request.user.id %}" class="btn btn-success">Edit avatar</a>
+              {% if user == request.user %}
+              <a href="{% url "accounts:edit_user" %}" class="btn btn-success">Редактировать профиль</a>
+              {% endif %}
               <br>
               <br>
-              <!-- Social buttons using anchor elements and btn-primary class to style -->
-              <p>
-                <a class="btn btn-primary btn-xs" href="#" role="button">Facebook</a>
-                <a class="btn btn-primary btn-xs" href="#" role="button">Twitter</a>
-                <a class="btn btn-primary btn-xs" href="#" role="button">Instagram</a>
-                <a class="btn btn-primary btn-xs" href="#" role="button">Website</a>
-              </p>
 
           </div>
 
@@ -52,7 +45,7 @@
       <div class="col-md-7 col-sm-* col-xs-*">
 
         <!-- "Lead" text at top of column. -->
-        <h5 class="text-center text-info">USER TAPE</h5><hr>
+        <h5 class="text-center text-info">Лента пользователя</h5><hr>
 
         {% for repost in reposts %}
         <div class="card">
@@ -70,7 +63,7 @@
                         </h3>
                         <div class="mb-1 text-muted">Nov 13</div>
                         <p class="card-text mb-auto">{{ repost.get_object_for_content_type.content|truncatewords:15 }}</p>
-                        <a href="{{ repost.get_object_for_content_type.get_absolute_url }}">Continue reading</a>
+                        <a href="{{ repost.get_object_for_content_type.get_absolute_url }}">Читать подробнее</a>
                     </div>
                     <img class="card-img-right flex-auto d-none d-lg-block img-fluid img-preview image-preview"
                          src="{{ repost.get_object_for_content_type.image.url }}" data-holder-rendered="true"

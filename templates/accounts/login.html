@@ -2,15 +2,14 @@
 
 {% block content %}
 <div class="container">
-	<h1>Welcome</h1>
-	<p>
-		You can log in here!
-	</p>
-	<h2>login</h2>
+	<h1>Добро пожаловать</h1>
+	<p>Войдите в ваш аккаунт!</p>
+	<h2>Вход</h2>
 	<form method="post">
     {% csrf_token %}
-    {{ form.as_p }}
-    <button type="submit">Login</button>
+    <p>Логин: {{ form.username }}</p>
+    <p>Пароль: {{ form.password }}</p>
+    <button class="btn btn-success" type="submit">Вход</button>
 	</form>
 </div>
 {% endblock content %}

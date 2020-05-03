@@ -1,5 +1,4 @@
 from django.contrib.auth.views import (
-    LoginView,
     login,
     logout,
     password_reset,
@@ -9,10 +8,10 @@ from django.contrib.auth.views import (
 )
 from django.urls import path, re_path
 
-from .views import (
+from accounts.views import (
     ChangePasswordView,
-    EditProfileView,
-    EditUserProfile,
+    EditUserView,
+    EditUserProfileView,
     ProfileView,
     RegisterView,
 )
@@ -20,12 +19,12 @@ from .views import (
 app_name = "accounts"
 
 urlpatterns = [
-    re_path(r"^(?P<pk>\d+)/$", ProfileView.as_view(), name="view_profile_with_pk"),
-    re_path(r"^(?P<pk>\d+)/edit$", EditUserProfile.as_view(), name="EditUserProfile"),
+    re_path(r"^(?P<pk>\d+)/$", ProfileView.as_view(), name="view_profile"),
     path("register/", RegisterView.as_view(), name="register"),
     path("login/", login, {"template_name": "accounts/login.html"}, name="login"),
     path("logout/", logout, {"template_name": "accounts/logout.html"}, name="logout"),
-    path("edit/", EditProfileView.as_view(), name="edit_profile"),
+    path("edit/", EditUserView.as_view(), name="edit_user"),
+    path("edit-profile/", EditUserProfileView.as_view(), name="edit_profile"),
     path("change-password/", ChangePasswordView.as_view(), name="change_password"),
     path(
         "reset-password/",

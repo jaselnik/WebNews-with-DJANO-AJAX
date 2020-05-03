@@ -63,7 +63,7 @@ class CategoryDetailView(DetailView, CategoryListMixin):
     @method_decorator(login_required)
     def post(self, request, *args, **kwargs):
         form = ArticleForm(request.POST or None, request.FILES or None)
-        import pdb; pdb.set_trace()
+        # import pdb; pdb.set_trace()
         if form.is_valid():
             user = request.user
             category = self.get_object()
@@ -163,8 +163,9 @@ class HotArticleImageView(View):
     def get(self, request, *args, **kwargs):
         article_id = request.GET.get("article_id")
         article = get_object_or_404(Article, id=article_id)
-        data = {"article_image": article.image.url}
-        return JsonResponse(data)
+        return JsonResponse({
+            "image_url": request.build_absolute_uri(article.image.url),
+        })
 
 
 class CommentSavingView(LoginRequiredMixin, View):
@@ -195,7 +196,7 @@ class CommentSavingView(LoginRequiredMixin, View):
                 "comment_dislikes": dislikes_count,
                 "timestamp": new_comment_timestamp,
                 "slug": article.slug,
-            }
+            },
         ]
         return JsonResponse(data, safe=False)
 
@@ -244,7 +245,7 @@ class UserMarkedSomethingView(View):
                 self.model_obj.marks.create(author=request.user, status=mark[0])
             likes_count = self.model_mark.get_related_likes(model_obj=self.model_obj)
             dislikes_count = self.model_mark.get_related_dislikes(
-                model_obj=self.model_obj
+                model_obj=self.model_obj,
             )
             data = {
                 "obj_id": obj_id,

@@ -39,11 +39,11 @@
           </div>
           <div class="col-4 d-flex justify-content-end align-items-center">
             {% if request.user.is_authenticated %}
-            <a class="btn btn-sm btn-outline-success" href="{% url 'accounts:view_profile_with_pk' request.user.pk %}">Profile</a>
-            <a class="btn btn-sm btn-outline-secondary" href="{% url 'accounts:logout' %}">Sign out</a>
+            <a class="btn btn-sm btn-outline-success" href="{% url 'accounts:view_profile' request.user.pk %}">Профиль</a>
+            <a class="btn btn-sm btn-outline-secondary" href="{% url 'accounts:logout' %}">Выход</a>
             {% else %}
-            <a class="btn btn-sm btn-outline-secondary" href="{% url 'accounts:login' %}">Sign in</a>
-            <a class="btn btn-sm btn-outline-primary" href="{% url 'accounts:register' %}">Sign up</a>
+            <a class="btn btn-sm btn-outline-secondary" href="{% url 'accounts:login' %}">Вход</a>
+            <a class="btn btn-sm btn-outline-primary" href="{% url 'accounts:register' %}">Зерегистрироваться</a>
             {% endif %}
           </div>
         </div>
@@ -64,13 +64,6 @@
 
     {% block content %}
     {% endblock content %}
-
-    <footer class="blog-footer">
-      <p>Blog template built for <a href="https://getbootstrap.com/">Bootstrap</a> by <a href="https://twitter.com/mdo">@mdo</a>.</p>
-      <p>
-        <a href="#">Back to top</a>
-      </p>
-    </footer>
 
     <!-- Bootstrap core JavaScript
     ================================================== -->

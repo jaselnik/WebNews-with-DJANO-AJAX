@@ -11,6 +11,12 @@ DEBUG_PROPAGATE_EXCEPTIONS = True
 
 ALLOWED_HOSTS = ["*"]
 
+INSTALLED_APPS += ["django_pdb"]
+
+MIDDLEWARE += [
+    'django_pdb.middleware.PdbMiddleware',
+]
+
 DATABASES = {
     "default": {
         "ENGINE": "django.db.backends.postgresql",

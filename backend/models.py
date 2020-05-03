@@ -61,8 +61,7 @@ class Article(models.Model):
         return Mark.get_related_dislikes(self)
 
     def save(self, **kwargs):
-        slug_str = "%s %s" % (self.title, str(self.pk))
-        unique_slugify(self, slug_str)
+        unique_slugify(self, f"{self.title}")
         super(Article, self).save(**kwargs)
 
     def __str__(self):

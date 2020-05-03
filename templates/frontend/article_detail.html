@@ -11,7 +11,7 @@
   <div class="row">
     <div class="col-md-8 blog-main">
       <h3 class="pb-3 mb-4 font-italic border-bottom">
-        View all articles about
+          Все статьи категории
         <a href="{{ article.category.get_absolute_url }}">{{ article.category.name }}</a>
       </h3>
 
@@ -22,7 +22,7 @@
         <p><img src="{{ article.image.url }}" alt="" style="widht:100%; height:500px"></p>
         <p>{{ article.content }}</p>
         {% if article.author == request.user %}
-          <a class="btn btn-success" href="{% url "main:article-edit" cat_slug=cat_slug slug=slug %}">Edit article</a>
+          <a class="btn btn-success" href="{% url "main:article-edit" cat_slug=cat_slug slug=slug %}">Редактировать статью</a>
         {% endif %}
         <hr>
       <div class="container">
@@ -37,7 +37,7 @@
               <div class="modal-dialog" role="document">
                 <div class="modal-content">
                   <div class="modal-header">
-                    <h5 class="modal-title" id="repostModalLabel">What do u think about it..?</h5>
+                    <h5 class="modal-title" id="repostModalLabel">Что вы об этом думаете..?</h5>
                     <button type="button" class="close" data-dismiss="modal" aria-label="Close">
                       <span aria-hidden="true">&times;</span>
                     </button>
@@ -49,11 +49,11 @@
                         <form action="POST">
                             {% csrf_token %}
                             {{ repost_form|crispy }}
-                            <button type="button" class="btn btn-secondary" data-dismiss="modal">Close</button>
-                            <button type="button" class="btn btn-primary" id="add_repost">Continue</button>
+                            <button type="button" class="btn btn-secondary" data-dismiss="modal">Закрыть</button>
+                            <button type="button" class="btn btn-primary" id="add_repost">Продолжить</button>
                         </form>
                         {% else %}
-                            <h2 class="alert alert-info">If you want to repost any article, you must be registered</h2>
+                            <h2 class="alert alert-info">Если вы хотите сохранить запись, то необходимо зарегистрироваться</h2>
                         {% endif %}
                     </div>
                   </div>
@@ -63,16 +63,16 @@
 
               <hr>
               <div class="col-sm-7 col-sm-offset-2">
-                  <h6>Comments:</h6>
+                  <h6>Комментарии:</h6>
                   {% if request.user.is_authenticated %}
                       <form action="" method="post">
                           <input type="hidden" id="article" data-id="{{ article.pk }}">
                           {% csrf_token %}
                           {{ comment_form|crispy }}
-                          <input type="submit" value="Post" id="add_comment">
+                          <input type="submit" value="Отправить" id="add_comment">
                       </form>
                   {% else %}
-                      <h2 class="alert alert-info">If you want to add comments, you must be registered</h2>
+                      <h2 class="alert alert-info">Если вы хотите добавить комментарии, то необходимо зарегистрироваться</h2>
                   {% endif %}
                   <div class="comments">
                   {% for comment in article_comments %}
@@ -85,7 +85,7 @@
                             <small>{{ comment.timestamp }}</small>
                             <br>
                             {% if request.user == comment.author %}
-                              <a class="btn btn-success btn-sm" href="{% url "main:comment-edit" id=comment.id slug=slug %}">Edit comment</a>
+                              <a class="btn btn-success btn-sm" href="{% url "main:comment-edit" id=comment.id slug=slug %}">Редактировать комментарий</a>
                             {% endif %}
                           </div>
                           {% if request.user.is_authenticated %}
@@ -148,13 +148,14 @@
                     $.each(data, function (field) {
                         $('.comments').prepend(`<div class="col-sm-12"><hr>`+
                         `<div class="d-flex justify-content-between bd-highlight mb-3">`+
-                        `<div class="p-2 bd-highlight"><small>`+data[field]['author']+`</small><p>`+data[field]['comment']+
-                        `</p><small>`+data[field]['timestamp']+`</small><a class="btn btn-success btn-sm" href="`+edit_url+`">Edit comment</a></div>`+
-                        `</p><small>`+data[field]['timestamp']+`</small></div>`+
+                        `<div class="p-2 bd-highlight"><small>`+data[field]['author']+`</small>`+
+                        `<p>`+data[field]['comment']+`</p>`+
+                        `<small>`+data[field]['timestamp']+`</small><br>`+
+                        `<a class="btn btn-success btn-sm" href="`+edit_url+`">Редактировать комментарий</a></div>`+
                         `<div class="p-2 bd-highlight justify-content-end">`+
                         `<a href="#" class="like" data-id="`+data[field]['comment_id']+`" data-type="comment">`+
-                        `<i class="far fa-thumbs-up" style="color: #00cc00"></i>`+
-                        `</a><span id="comment-liked-`+data[field]['comment_id']+`">`+data[field]['comment_likes']+`</span>`+
+                        `<i class="far fa-thumbs-up" style="color: #00cc00"></i></a>`+
+                        `<span id="comment-liked-`+data[field]['comment_id']+`">`+data[field]['comment_likes']+`</span>`+
                         `<a href="#" class="dislike" data-id="`+data[field]['comment_id']+`" data-type="comment" style="padding-left: 25px">`+
                         `<i class="far fa-thumbs-down" style="color: #a41515"></i>`+
                         `</a><span id="comment-disliked-`+data[field]['comment_id']+`">`+data[field]['comment_dislikes']+`</span>`+
